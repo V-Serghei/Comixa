@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Comixa</string>
+    
+    <!-- Navigation Drawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    
+    <!-- Main Sections -->
+    <string name="menu_home">Home</string>
+    <string name="menu_library">Library</string>
+    <string name="menu_discover">Discover</string>
+    <string name="menu_community">Community</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_settings">Settings</string>
+    
+    <!-- Home Sub-Sections -->
+    <string name="menu_home_section1">Recent</string>
+    <string name="menu_home_section2">Favorites</string>
+    
+    <!-- Library Sub-Sections -->
+    <string name="menu_library_section1">My Collection</string>
+    <string name="menu_library_section2">Reading List</string>
+    
+    <!-- Discover Sub-Sections -->
+    <string name="menu_discover_section1">Trending</string>
+    <string name="menu_discover_section2">New Releases</string>
+    
+    <!-- Community Sub-Sections -->
+    <string name="menu_community_section1">Forums</string>
+    <string name="menu_community_section2">Groups</string>
+    
+    <!-- Profile Sub-Sections -->
+    <string name="menu_profile_section1">My Profile</string>
+    <string name="menu_profile_section2">Statistics</string>
+    
+    <!-- Settings Sub-Sections -->
+    <string name="menu_settings_section1">Preferences</string>
+    <string name="menu_settings_section2">About</string>
+</resources>
