@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/ic_menu_today"
+            android:title="@string/menu_home">
+            <menu>
+                <item
+                    android:id="@+id/nav_home_section1"
+                    android:title="@string/menu_home_section1" />
+                <item
+                    android:id="@+id/nav_home_section2"
+                    android:title="@string/menu_home_section2" />
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/nav_library"
+            android:icon="@android:drawable/ic_menu_sort_by_size"
+            android:title="@string/menu_library">
+            <menu>
+                <item
+                    android:id="@+id/nav_library_section1"
+                    android:title="@string/menu_library_section1" />
+                <item
+                    android:id="@+id/nav_library_section2"
+                    android:title="@string/menu_library_section2" />
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/nav_discover"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="@string/menu_discover">
+            <menu>
+                <item
+                    android:id="@+id/nav_discover_section1"
+                    android:title="@string/menu_discover_section1" />
+                <item
+                    android:id="@+id/nav_discover_section2"
+                    android:title="@string/menu_discover_section2" />
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/nav_community"
+            android:icon="@android:drawable/ic_menu_share"
+            android:title="@string/menu_community">
+            <menu>
+                <item
+                    android:id="@+id/nav_community_section1"
+                    android:title="@string/menu_community_section1" />
+                <item
+                    android:id="@+id/nav_community_section2"
+                    android:title="@string/menu_community_section2" />
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="@string/menu_profile">
+            <menu>
+                <item
+                    android:id="@+id/nav_profile_section1"
+                    android:title="@string/menu_profile_section1" />
+                <item
+                    android:id="@+id/nav_profile_section2"
+                    android:title="@string/menu_profile_section2" />
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@android:drawable/ic_menu_preferences"
+            android:title="@string/menu_settings">
+            <menu>
+                <item
+                    android:id="@+id/nav_settings_section1"
+                    android:title="@string/menu_settings_section1" />
+                <item
+                    android:id="@+id/nav_settings_section2"
+                    android:title="@string/menu_settings_section2" />
+            </menu>
+        </item>
+    </group>
+</menu>
