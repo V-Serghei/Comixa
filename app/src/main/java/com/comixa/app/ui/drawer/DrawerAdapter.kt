@@ -31,6 +31,7 @@ class DrawerAdapter(
             flat.add(s)
             if (s.expanded) flat.addAll(s.subItems)
         }
+        // TODO: use DiffUtil
         notifyDataSetChanged()
     }
 
