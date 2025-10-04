@@ -37,4 +37,16 @@
     <string name="menu_settings_section1">Preferences</string>
     <string name="menu_settings_section2">About</string>
     <string name="Description">Your Comic Universe</string>
+
+    <!-- Lab1 Section -->
+    <string name="menu_labs">Labs</string>
+    <string name="menu_lab1">Lab1</string>
+    <string name="menu_lab1_panel">Panel</string>
+    <string name="google_search">Google search query</string>
+    <string name="rear_camera">Rear camera</string>
+    <string name="front_camera">Front camera</string>
+    <string name="show_notification_in_10_seconds">Show notification in 10 seconds</string>
+    <string name="search_in_google">Search in Google</string>
+    <string name="camera_camerax">Open camera (CameraX)</string>
+    <string name="open_last_photo">Open last photo</string>
 </resources>
