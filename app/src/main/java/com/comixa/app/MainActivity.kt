@@ -2,50 +2,111 @@ package com.comixa.app
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.comixa.app.databinding.ActivityMainBinding
-import com.google.android.material.navigation.NavigationView
+import com.comixa.app.model.DrawerSection
+import com.comixa.app.model.DrawerSubItem
+import com.comixa.app.ui.drawer.DrawerAdapter
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var drawerLayout: DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
 
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home_section1, R.id.nav_home_section2,
-                R.id.nav_library_section1, R.id.nav_library_section2,
-                R.id.nav_discover_section1, R.id.nav_discover_section2,
-                R.id.nav_community_section1, R.id.nav_community_section2,
-                R.id.nav_profile_section1, R.id.nav_profile_section2,
-                R.id.nav_settings_section1, R.id.nav_settings_section2
-            ), drawerLayout
-        )
+        drawerLayout = binding.drawerLayout
+        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+
+        fun forceHamburger() {
+            binding.toolbar.navigationIcon = DrawerArrowDrawable(this).apply { progress = 0f } // 0 = бургер
+            binding.toolbar.setNavigationOnClickListener { drawerLayout.open() }
+        }
+        forceHamburger()
+        navController.addOnDestinationChangedListener { _, _, _ -> forceHamburger() }
+
+        val sections = mutableListOf(
+            DrawerSection(
+                title = getString(R.string.menu_home),
+                iconRes = android.R.drawable.ic_menu_today,
+                subItems = listOf(
+                    DrawerSubItem(getString(R.string.menu_home_section1), R.id.nav_home_section1),
+                    DrawerSubItem(getString(R.string.menu_home_section2), R.id.nav_home_section2)
+                )
+            ),
+            DrawerSection(
+                title = getString(R.string.menu_library),
+                iconRes = android.R.drawable.ic_menu_sort_by_size,
+                subItems = listOf(
+                    DrawerSubItem(getString(R.string.menu_library_section1), R.id.nav_library_section1),
+                    DrawerSubItem(getString(R.string.menu_library_section2), R.id.nav_library_section2)
+                )
+            ),
+            DrawerSection(
+                title = getString(R.string.menu_discover),
+                iconRes = android.R.drawable.ic_menu_search,
+                subItems = listOf(
+                    DrawerSubItem(getString(R.string.menu_discover_section1), R.id.nav_discover_section1),
+                    DrawerSubItem(getString(R.string.menu_discover_section2), R.id.nav_discover_section2)
+                )
+            ),
+            DrawerSection(
+                title = getString(R.string.menu_community),
+                iconRes = android.R.drawable.ic_menu_share,
+                subItems = listOf(
+                    DrawerSubItem(getString(R.string.menu_community_section1), R.id.nav_community_section1),
+                    DrawerSubItem(getString(R.string.menu_community_section2), R.id.nav_community_section2)
+                )
+            ),
+            DrawerSection(
+                title = getString(R.string.menu_profile),
+                iconRes = android.R.drawable.ic_menu_myplaces,
+                subItems = listOf(
+                    DrawerSubItem(getString(R.string.menu_profile_section1), R.id.nav_profile_section1),
+                    DrawerSubItem(getString(R.string.menu_profile_section2), R.id.nav_profile_section2)
+                )
+            ),
+            DrawerSection(
+                title = getString(R.string.menu_settings),
+                iconRes = android.R.drawable.ic_menu_preferences,
+                subItems = listOf(
+                    DrawerSubItem(
+                        getString(R.string.menu_settings_section1),
+                        R.id.nav_settings_section1
+                    ),
+                    DrawerSubItem(
+                        title = getString(R.string.menu_settings_section2),
+                        destinationId = R.id.nav_settings_section2
+                    )
+                )
+            )
+        )
+
+        binding.drawerRecycler.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = DrawerAdapter(navController, drawerLayout, sections)
+            setHasFixedSize(true)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+        drawerLayout.open()
+        return true
     }
 }

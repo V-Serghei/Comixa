@@ -36,4 +36,5 @@
     <!-- Settings Sub-Sections -->
     <string name="menu_settings_section1">Preferences</string>
     <string name="menu_settings_section2">About</string>
+    <string name="Description">Your Comic Universe</string>
 </resources>
