@@ -3,6 +3,13 @@ package com.comixa.app.model
 data class DrawerSection(
     val title: String,
     val iconRes: Int,
+    val subItems: List<DrawerSubItem> = emptyList(),
+    val groups: List<DrawerGroup> = emptyList(),       
+    var expanded: Boolean = false
+)
+
+data class DrawerGroup(
+    val title: String,
     val subItems: List<DrawerSubItem>,
     var expanded: Boolean = false
 )
