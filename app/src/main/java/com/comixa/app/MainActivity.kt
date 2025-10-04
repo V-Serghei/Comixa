@@ -34,10 +34,6 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        fun forceHamburger() {
-            binding.toolbar.navigationIcon = DrawerArrowDrawable(this).apply { progress = 0f } // 0 = бургер
-            binding.toolbar.setNavigationOnClickListener { drawerLayout.open() }
-        }
         forceHamburger()
         navController.addOnDestinationChangedListener { _, _, _ -> forceHamburger() }
 
@@ -104,7 +100,14 @@ class MainActivity : AppCompatActivity() {
             setHasFixedSize(true)
         }
     }
-
+    private fun forceHamburger() {
+        binding.toolbar.navigationIcon = DrawerArrowDrawable(this).apply {
+            progress = 0f
+        } // 0 = hamburger
+        binding.toolbar.setNavigationOnClickListener {
+            drawerLayout.open()
+        }
+    }
     override fun onSupportNavigateUp(): Boolean {
         drawerLayout.open()
         return true
