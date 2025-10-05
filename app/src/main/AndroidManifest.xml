@@ -34,6 +34,20 @@
         <activity
             android:name=".ui.preview.ImagePreviewActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.labs.lab2.OrganizerMainActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".ui.labs.lab2.AddActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.labs.lab2.OrganizerMainActivity" />
+
+        <activity
+            android:name=".ui.labs.lab2.UpdateActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.labs.lab2.OrganizerMainActivity" />
 
     </application>
 </manifest>

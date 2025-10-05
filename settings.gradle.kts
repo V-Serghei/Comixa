@@ -23,3 +23,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Comixa"
 include(":app")
+include(":app:data")
