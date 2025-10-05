@@ -21,18 +21,25 @@
                 android:imeOptions="actionSearch"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.radiobutton.MaterialRadioButton
-            android:id="@+id/rbBack"
+        <RadioGroup
+            android:id="@+id/rgCamera"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="@string/rear_camera"/>
+            android:orientation="horizontal"
+            android:checkedButton="@+id/rbBack">
 
-        <com.google.android.material.radiobutton.MaterialRadioButton
-            android:id="@+id/rbFront"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/front_camera"/>
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rbBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rear_camera" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rbFront"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/front_camera" />
+        </RadioGroup>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnNotify"
