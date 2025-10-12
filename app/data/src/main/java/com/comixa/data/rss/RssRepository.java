@@ -2,6 +2,7 @@ package com.comixa.data.rss;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.InputStream;
@@ -28,29 +29,37 @@ public class RssRepository {
                 .build();
     }
 
-    // Sources
-    public Flow<List<SourceEntity>> observeSources() {
-        return dao.observeSources();
-    }
+    public Flow<List<SourceEntity>> observeSources() { return dao.observeSources(); }
+    public List<SourceEntity> getAllSources() { return dao.getAllSources(); }
 
     @WorkerThread
     public void addSourceAndSync(@NonNull String url) {
         SourceEntity existing = dao.getSourceByUrl(url);
-        long id;
-        if (existing != null) {
-            id = existing.getId();
-        } else {
-            SourceEntity toInsert = new SourceEntity(url);
-            id = dao.insertSource(toInsert);
-        }
+        long id = (existing != null) ? existing.getId() : dao.insertSource(new SourceEntity(url));
         SourceEntity source = dao.getSourceById(id);
         if (source == null) return;
-        refreshSource(source.getId());
+        refreshSource(id);
     }
 
     @WorkerThread
-    public void deleteSource(@NonNull SourceEntity source) {
-        dao.deleteSource(source);
+    public void addSourceAndSyncWithProgress(@NonNull String url, @Nullable ProgressReporter reporter) {
+        if (reporter != null) reporter.onStart();
+        try {
+            if (reporter != null) reporter.onProgress(3);
+            SourceEntity existing = dao.getSourceByUrl(url);
+            long id = (existing != null) ? existing.getId() : dao.insertSource(new SourceEntity(url));
+
+            if (reporter != null) reporter.onProgress(10);
+            SourceEntity source = dao.getSourceById(id);
+            if (source == null) return;
+
+            if (reporter != null) reporter.onProgress(20);
+            refreshSourceWithProgress(source.getId(), reporter);
+
+            if (reporter != null) reporter.onProgress(100);
+        } finally {
+            if (reporter != null) reporter.onStop();
+        }
     }
 
     @WorkerThread
@@ -61,44 +70,52 @@ public class RssRepository {
         ParsedFeed parsed = fetchAndParse(source.getUrl());
         if (parsed == null) return;
 
-        List<ArticleEntity> items = new ArrayList<>();
-        List<ParsedItem> parsedItems = parsed.getItems();
-        if (parsedItems != null) {
-            for (ParsedItem it : parsedItems) {
-                String link = it.getLink();
-                if (link != null) {
-                    ArticleEntity e = new ArticleEntity(
-                            sourceId,
-                            it.getTitle() != null ? it.getTitle() : link,
-                            link,
-                            it.getSummary(),
-                            it.getPublishedEpochSec()
-                    );
-                    items.add(e);
-                }
-            }
-        }
-
+        List<ArticleEntity> items = mapParsed(parsed, sourceId);
         dao.replaceArticles(sourceId, items);
 
-        long maxPublished = 0L;
-        for (ArticleEntity e : items) {
-            Long p = e.getPublishedEpochSec();
-            if (p != null && p > maxPublished) maxPublished = p;
-        }
-
+        long maxPublished = getMaxPublished(items);
         String newTitle = (parsed.getTitle() != null) ? parsed.getTitle() : source.getUrl();
         Long newLastUpdated = (maxPublished > 0) ? maxPublished : null;
 
         dao.updateSourceMeta(sourceId, newTitle, newLastUpdated);
     }
 
-    // Articles
-    public Flow<List<ArticleEntity>> observeArticles(long sourceId) {
-        return dao.observeArticles(sourceId);
+    @WorkerThread
+    public void refreshSourceWithProgress(long sourceId, @Nullable ProgressReporter reporter) {
+        if (reporter != null) reporter.onStart();
+        try {
+            if (reporter != null) reporter.onProgress(5);
+
+            SourceEntity source = dao.getSourceById(sourceId);
+            if (source == null) return;
+
+            if (reporter != null) reporter.onProgress(15);
+            ParsedFeed parsed = fetchAndParse(source.getUrl());
+            if (parsed == null) return;
+
+            if (reporter != null) reporter.onProgress(50);
+            List<ArticleEntity> items = mapParsed(parsed, sourceId);
+
+            if (reporter != null) reporter.onProgress(70);
+            dao.replaceArticles(sourceId, items);
+
+            long maxPublished = getMaxPublished(items);
+            String newTitle = parsed.getTitle() != null ? parsed.getTitle() : source.getUrl();
+            Long newLastUpdated = (maxPublished > 0) ? maxPublished : null;
+
+            if (reporter != null) reporter.onProgress(90);
+            dao.updateSourceMeta(sourceId, newTitle, newLastUpdated);
+
+            if (reporter != null) reporter.onProgress(100);
+        } finally {
+            if (reporter != null) reporter.onStop();
+        }
     }
 
-    // HTTP + parse
+    // ---------- Articles ----------
+    public Flow<List<ArticleEntity>> observeArticles(long sourceId) { return dao.observeArticles(sourceId); }
+
+    // ---------- HTTP + Parse ----------
     @WorkerThread
     private ParsedFeed fetchAndParse(@NonNull String url) {
         Request request = new Request.Builder().url(url).get().build();
@@ -111,5 +128,35 @@ public class RssRepository {
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    // ---------- Helpers ----------
+    private static List<ArticleEntity> mapParsed(ParsedFeed parsed, long sourceId) {
+        List<ArticleEntity> items = new ArrayList<>();
+        List<ParsedItem> parsedItems = parsed.getItems();
+        if (parsedItems != null) {
+            for (ParsedItem it : parsedItems) {
+                String link = it.getLink();
+                if (link != null) {
+                    items.add(new ArticleEntity(
+                            sourceId,
+                            it.getTitle() != null ? it.getTitle() : link,
+                            link,
+                            it.getSummary(),
+                            it.getPublishedEpochSec()
+                    ));
+                }
+            }
+        }
+        return items;
+    }
+
+    private static long getMaxPublished(List<ArticleEntity> items) {
+        long maxPublished = 0L;
+        for (ArticleEntity e : items) {
+            Long p = e.getPublishedEpochSec();
+            if (p != null && p > maxPublished) maxPublished = p;
+        }
+        return maxPublished;
     }
 }

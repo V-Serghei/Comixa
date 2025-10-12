@@ -107,7 +107,13 @@ class MainActivity : AppCompatActivity() {
                         subItems = listOf(
                             DrawerSubItem("Sources", R.id.nav_lab3_sources)
                         )
-                )
+                    ),
+                    DrawerGroup(
+                        "Lab4 (Loader)",
+                        subItems = listOf(
+                            DrawerSubItem("Demo", R.id.nav_lab4)
+                        )
+                    )
                 )
             )
         )

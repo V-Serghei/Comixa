@@ -8,47 +8,28 @@ import androidx.room.PrimaryKey;
 
 @Entity(
         tableName = "sources",
-        indices = { @Index(value = {"url"}, unique = true) }
+        indices = {@Index(value = {"url"}, unique = true)}
 )
 public class SourceEntity {
-
     @PrimaryKey(autoGenerate = true)
-    private long id;
+    public long id;
 
-    @NonNull
-    private String url;
+    public String url;
+    public String title;
+    public Long lastUpdatedEpochSec;
 
-    private String title;
-
-    private Long lastUpdatedEpochSec;
-
-    public SourceEntity() {
-        this.url = "";
-    }
-
-    @Ignore
-    public SourceEntity(@NonNull String url) {
+    public SourceEntity() {}
+    public SourceEntity(String url) {
         this.url = url;
     }
-
-    @Ignore
-    public SourceEntity(long id, @NonNull String url, String title, Long lastUpdatedEpochSec) {
-        this.id = id;
+    public SourceEntity(String url, String title, Long lastUpdatedEpochSec) {
         this.url = url;
         this.title = title;
         this.lastUpdatedEpochSec = lastUpdatedEpochSec;
     }
 
-    // --- getters/setters ---
     public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
-
-    @NonNull public String getUrl() { return url; }
-    public void setUrl(@NonNull String url) { this.url = url; }
-
+    public String getUrl() { return url; }
     public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
     public Long getLastUpdatedEpochSec() { return lastUpdatedEpochSec; }
-    public void setLastUpdatedEpochSec(Long lastUpdatedEpochSec) { this.lastUpdatedEpochSec = lastUpdatedEpochSec; }
 }

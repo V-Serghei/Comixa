@@ -13,8 +13,10 @@ import kotlinx.coroutines.flow.Flow;
 
 @Dao
 public interface RssDao {
-
     // Sources
+    @Query("SELECT * FROM sources ORDER BY id DESC")
+    List<SourceEntity> getAllSources();
+
     @Query("SELECT * FROM sources ORDER BY id DESC")
     Flow<List<SourceEntity>> observeSources();
 
@@ -36,7 +38,6 @@ public interface RssDao {
     @Delete
     void deleteSource(SourceEntity source);
 
-    // Articles
     @Query("SELECT * FROM articles WHERE sourceId = :sourceId " +
             "ORDER BY COALESCE(publishedEpochSec, 0) DESC, id DESC")
     Flow<List<ArticleEntity>> observeArticles(long sourceId);
@@ -53,3 +54,4 @@ public interface RssDao {
         insertArticles(items);
     }
 }
+

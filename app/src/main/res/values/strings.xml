@@ -60,4 +60,7 @@
     <string name="lab3_empty_sources">Add at least one source</string>
     <string name="lab3_empty_items">No publications. Pull down to refresh.</string>
 
+    <string name="menu_lab4">Lab4: Custom Loader</string>
+    <string name="lab4_start_task">Start async task (5s)</string>
+    <string name="lab4_stop">Stop</string>
 </resources>

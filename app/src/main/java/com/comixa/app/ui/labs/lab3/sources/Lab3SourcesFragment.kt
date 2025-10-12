@@ -13,9 +13,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.comixa.app.R
 import com.comixa.app.adapter.lab3.SourcesAdapter
-import com.comixa.app.databinding.FragmentLab3SourcesBinding
 import com.comixa.app.databinding.DialogAddSourceBinding
-import com.comixa.app.viewmodel.Lab3.Lab3SourcesViewModel
+import com.comixa.app.databinding.FragmentLab3SourcesBinding
+import com.comixa.app.ui.labs.lab4.LoadingOverlay
+import com.comixa.app.ui.labs.lab4.LoadingOverlayView
+import com.comixa.app.viewmodel.lab3.Lab3SourcesViewModel
 import com.comixa.data.rss.SourceEntity
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -27,6 +29,7 @@ class Lab3SourcesFragment : Fragment() {
 
     private val vm: Lab3SourcesViewModel by viewModels()
     private lateinit var adapter: SourcesAdapter
+    private lateinit var overlay: LoadingOverlayView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -36,12 +39,15 @@ class Lab3SourcesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        overlay = LoadingOverlay.attach(binding.root as ViewGroup)
+        overlay.onStopClick = { vm.stopAllTasks() }
+
         adapter = SourcesAdapter(
             onClick = { openItems(it) },
             onRefresh = { vm.refresh(it.id) },
             onDelete = { vm.delete(it) }
         )
-        binding.rvSources.layoutManager = LinearLayoutManager(requireContext()) // ВАЖНО!
+        binding.rvSources.layoutManager = LinearLayoutManager(requireContext())
         binding.rvSources.adapter = adapter
 
         binding.fabAdd.setOnClickListener { showAddDialog() }
@@ -50,6 +56,17 @@ class Lab3SourcesFragment : Fragment() {
             vm.sources.collectLatest { list ->
                 adapter.submitList(list)
                 binding.stateEmpty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            vm.progress.collectLatest { p ->
+                if (p == null) {
+                    overlay.stop()
+                } else {
+                    overlay.start()
+                    overlay.setProgress(p)
+                }
             }
         }
     }
@@ -66,7 +83,7 @@ class Lab3SourcesFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle("Add RSS URL")
             .setView(dialogBinding.root)
-            .setPositiveButton("Add") { _, _ ->
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 val url = dialogBinding.etUrl.text?.toString().orEmpty()
                 if (url.isNotBlank()) vm.add(url)
             }
@@ -75,7 +92,7 @@ class Lab3SourcesFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }
