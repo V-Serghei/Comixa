@@ -10,39 +10,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
 public class SimpleRssParser {
 
-    public static class ParsedFeed {
-        private final String title;
-        private final java.util.List<ParsedItem> items;
 
-        public ParsedFeed(String title, java.util.List<ParsedItem> items) {
-            this.title = title;
-            this.items = items;
-        }
-        public String getTitle() { return title; }
-        public java.util.List<ParsedItem> getItems() { return items; }
-    }
 
-    public static class ParsedItem {
-        private final String title;
-        private final String link;
-        private final String summary;
-        private final Long publishedEpochSec;
 
-        public ParsedItem(String title, String link, String summary, Long publishedEpochSec) {
-            this.title = title;
-            this.link = link;
-            this.summary = summary;
-            this.publishedEpochSec = publishedEpochSec;
-        }
-        public String getTitle() { return title; }
-        public String getLink() { return link; }
-        public String getSummary() { return summary; }
-        public Long getPublishedEpochSec() { return publishedEpochSec; }
-    }
 
     private SimpleRssParser() { }
 
@@ -173,7 +148,7 @@ public class SimpleRssParser {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat(f, Locale.US);
                 sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-                return sdf.parse(text).getTime() / 1000L;
+                return Objects.requireNonNull(sdf.parse(text)).getTime() / 1000L;
             } catch (ParseException | RuntimeException ignored) { }
         }
         return null;

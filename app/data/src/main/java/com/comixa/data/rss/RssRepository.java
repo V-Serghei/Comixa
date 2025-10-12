@@ -58,13 +58,13 @@ public class RssRepository {
         SourceEntity source = dao.getSourceById(sourceId);
         if (source == null) return;
 
-        SimpleRssParser.ParsedFeed parsed = fetchAndParse(source.getUrl());
+        ParsedFeed parsed = fetchAndParse(source.getUrl());
         if (parsed == null) return;
 
         List<ArticleEntity> items = new ArrayList<>();
-        List<SimpleRssParser.ParsedItem> parsedItems = parsed.getItems();
+        List<ParsedItem> parsedItems = parsed.getItems();
         if (parsedItems != null) {
-            for (SimpleRssParser.ParsedItem it : parsedItems) {
+            for (ParsedItem it : parsedItems) {
                 String link = it.getLink();
                 if (link != null) {
                     ArticleEntity e = new ArticleEntity(
@@ -100,7 +100,7 @@ public class RssRepository {
 
     // HTTP + parse
     @WorkerThread
-    private SimpleRssParser.ParsedFeed fetchAndParse(@NonNull String url) {
+    private ParsedFeed fetchAndParse(@NonNull String url) {
         Request request = new Request.Builder().url(url).get().build();
         try (Response resp = client.newCall(request).execute()) {
             if (!resp.isSuccessful()) return null;
