@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.comixa.app.databinding.FragmentGenericBinding
-import com.comixa.app.viewmodel.DiscoverSection2ViewModel
+import com.comixa.app.viewmodel.DiscoverSection.DiscoverSection2ViewModel
 
 class DiscoverSection2Fragment : Fragment() {
 

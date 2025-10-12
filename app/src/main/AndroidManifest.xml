@@ -7,7 +7,7 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -34,6 +34,24 @@
         <activity
             android:name=".ui.preview.ImagePreviewActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.labs.lab2.OrganizerMainActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".ui.labs.lab2.AddActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.labs.lab2.OrganizerMainActivity" />
+
+        <activity
+            android:name=".ui.labs.lab2.UpdateActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.labs.lab2.OrganizerMainActivity" />
+        <activity
+            android:name=".ui.labs.lab2.SearchEventsActivity"
+            android:exported="false"/>
+
 
     </application>
 </manifest>

@@ -49,4 +49,18 @@
     <string name="search_in_google">Search in Google</string>
     <string name="camera_camerax">Open camera (CameraX)</string>
     <string name="open_last_photo">Open last photo</string>
+    <string name="lab_2">Lab 2 (Organizer)</string>
+
+    <string name="menu_lab3_sources">Sources</string>
+    <string name="menu_lab3_items">Publications</string>
+    <string name="action_add_source">Add source</string>
+    <string name="action_add">Add</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="hint_source_url">Source URL (RSS/Atom)</string>
+    <string name="lab3_empty_sources">Add at least one source</string>
+    <string name="lab3_empty_items">No publications. Pull down to refresh.</string>
+
+    <string name="menu_lab4">Lab4: Custom Loader</string>
+    <string name="lab4_start_task">Start async task (5s)</string>
+    <string name="lab4_stop">Stop</string>
 </resources>

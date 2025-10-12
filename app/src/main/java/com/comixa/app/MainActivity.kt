@@ -95,6 +95,23 @@ class MainActivity : AppCompatActivity() {
                         title = "Lab1",
                         subItems = listOf(
                             DrawerSubItem("Panel", R.id.nav_lab1_panel)
+
+                        )
+                    ),
+                    DrawerGroup("Lab2 (Organizer)", subItems = listOf(
+                        DrawerSubItem("Calendar", R.id.nav_lab2)
+
+                    )),
+                    DrawerGroup(
+                        "Lab3 (RSS)",
+                        subItems = listOf(
+                            DrawerSubItem("Sources", R.id.nav_lab3_sources)
+                        )
+                    ),
+                    DrawerGroup(
+                        "Lab4 (Loader)",
+                        subItems = listOf(
+                            DrawerSubItem("Demo", R.id.nav_lab4)
                         )
                     )
                 )
