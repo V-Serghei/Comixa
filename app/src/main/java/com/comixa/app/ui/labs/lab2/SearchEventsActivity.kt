@@ -5,18 +5,22 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.comixa.app.adapter.lab2.SearchEventsAdapter
 import com.comixa.app.databinding.ActivityLab2SearchBinding
+import com.comixa.app.viewmodel.lab2.SearchEventsViewModel
 import com.comixa.data.event.Event
-import com.comixa.data.event.EventXmlStore
+import kotlinx.coroutines.flow.collectLatest
 
 class SearchEventsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLab2SearchBinding
-    private lateinit var store: EventXmlStore
-    private lateinit var adapter: SearchEventsAdapter
+    private val vm: SearchEventsViewModel by viewModels()
 
+    private lateinit var adapter: SearchEventsAdapter
     private var all: List<Event> = emptyList()
     private var selected: Event? = null
 
@@ -29,8 +33,6 @@ class SearchEventsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        store = EventXmlStore(this)
-
         adapter = SearchEventsAdapter { selected = it }
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(this@SearchEventsActivity)
@@ -38,7 +40,6 @@ class SearchEventsActivity : AppCompatActivity() {
             setHasFixedSize(true)
         }
 
-        // Поиск при вводе
         binding.etQuery.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { applyFilter() }
@@ -46,46 +47,38 @@ class SearchEventsActivity : AppCompatActivity() {
         })
 
         binding.btnUpdate.setOnClickListener {
-            val e = selected
-            if (e == null) {
-                Toast.makeText(this, "Select an event from the list", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val e = selected ?: return@setOnClickListener Toast.makeText(this, "Select an event", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, UpdateActivity::class.java).putExtra(UpdateActivity.EXTRA_EVENT_ID, e.id))
         }
 
         binding.btnRemove.setOnClickListener {
-            val e = selected
-            if (e == null) {
-                Toast.makeText(this, "Select the event to delete", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val e = selected ?: return@setOnClickListener Toast.makeText(this, "Select the event to delete", Toast.LENGTH_SHORT).show()
+            vm.delete(e.id) {
+                runOnUiThread {
+                    selected = null
+                    applyFilter()
+                }
             }
-            store.delete(e.id)
-            // Обновим данные после удаления
-            reloadAll()
-            applyFilter()
-            selected = null
+        }
+
+        lifecycleScope.launchWhenStarted {
+            vm.all.collectLatest { list ->
+                all = list
+                applyFilter()
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        reloadAll()
-        applyFilter()
-    }
-
-    private fun reloadAll() {
-        all = store.getAll()
+        vm.reload()
     }
 
     private fun applyFilter() {
         val q = binding.etQuery.text?.toString().orEmpty().trim()
-        val filtered = if (q.isBlank()) {
-            emptyList()
-        } else {
-            all.filter { it.description.contains(q, ignoreCase = true) }
-                .sortedBy { it.timeMillis }
-        }
+        val filtered = if (q.isBlank()) emptyList()
+        else all.filter { it.description.contains(q, ignoreCase = true) }.sortedBy { it.timeMillis }
+
         adapter.submit(filtered)
         binding.tvCount.text = if (q.isBlank()) "" else "${filtered.size} results"
         binding.emptyView.text = if (q.isBlank() || filtered.isNotEmpty()) "" else "Nothing found"

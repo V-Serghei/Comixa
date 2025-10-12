@@ -1,4 +1,4 @@
-package com.comixa.app.ui.labs.lab1
+package com.comixa.app.adapter.lab1
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -16,7 +16,8 @@ class LabNotificationWorker(ctx: Context, params: WorkerParameters) : Worker(ctx
         val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channelId = "comixa_channel"
         if (Build.VERSION.SDK_INT >= 26) {
-            val ch = NotificationChannel(channelId, "Comixa", NotificationManager.IMPORTANCE_DEFAULT)
+            val ch =
+                NotificationChannel(channelId, "Comixa", NotificationManager.IMPORTANCE_DEFAULT)
             ch.enableLights(true); ch.lightColor = Color.WHITE
             nm.createNotificationChannel(ch)
         }

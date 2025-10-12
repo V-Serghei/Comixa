@@ -1,4 +1,4 @@
-package com.comixa.app.ui.labs.lab3.items
+package com.comixa.app.adapter.lab3
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater

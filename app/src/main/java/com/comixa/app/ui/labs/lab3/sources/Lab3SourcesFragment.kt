@@ -12,8 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.comixa.app.R
+import com.comixa.app.adapter.lab3.SourcesAdapter
 import com.comixa.app.databinding.FragmentLab3SourcesBinding
 import com.comixa.app.databinding.DialogAddSourceBinding
+import com.comixa.app.viewmodel.Lab3.Lab3SourcesViewModel
 import com.comixa.data.rss.SourceEntity
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

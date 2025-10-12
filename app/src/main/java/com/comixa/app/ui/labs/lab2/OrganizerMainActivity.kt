@@ -4,20 +4,21 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.CalendarView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.comixa.app.adapter.lab2.Lab2EventsAdapter
 import com.comixa.app.databinding.ActivityLab2MainBinding
 import com.comixa.data.event.Event
-import com.comixa.data.event.EventXmlStore
-import java.util.Calendar
+import kotlinx.coroutines.flow.collectLatest
 
 class OrganizerMainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLab2MainBinding
-    private lateinit var store: EventXmlStore
-    private lateinit var adapter: Lab2EventsAdapter
+    private val vm: OrganizerMainViewModel by viewModels()
 
-    private var selectedDayStart: Long = dayStart(System.currentTimeMillis())
+    private lateinit var adapter: Lab2EventsAdapter
     private var selected: Event? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,21 +30,12 @@ class OrganizerMainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
-        store = EventXmlStore(this)
-
         binding.calendar.setOnDateChangeListener { _: CalendarView, y: Int, m: Int, d: Int ->
-            val cal = Calendar.getInstance()
-            cal.set(y, m, d, 0, 0, 0)
-            cal.set(Calendar.MILLISECOND, 0)
-            selectedDayStart = cal.timeInMillis
             selected = null
-            reload()
+            vm.setDay(y, m, d)
         }
 
-        adapter = Lab2EventsAdapter {
-            selected = it
-        }
-
+        adapter = Lab2EventsAdapter { selected = it }
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(this@OrganizerMainActivity)
             adapter = this@OrganizerMainActivity.adapter
@@ -51,63 +43,38 @@ class OrganizerMainActivity : AppCompatActivity() {
         }
 
         binding.btnAdd.setOnClickListener {
-            val i = Intent(this, AddActivity::class.java)
-            i.putExtra(AddActivity.EXTRA_DAY_START, selectedDayStart)
-            startActivity(i)
+            startActivity(
+                Intent(this, AddActivity::class.java)
+                    .putExtra(AddActivity.EXTRA_DAY_START, vm.selectedDayStart.value)
+            )
         }
 
         binding.btnUpdate.setOnClickListener {
-            val e = selected
-            if (e == null) {
-                Toast.makeText(this, "Select an event from the list", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val i = Intent(this, UpdateActivity::class.java)
-            i.putExtra(UpdateActivity.EXTRA_EVENT_ID, e.id)
-            startActivity(i)
+            val e = selected ?: return@setOnClickListener Toast.makeText(this, "Select an event", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, UpdateActivity::class.java).putExtra(UpdateActivity.EXTRA_EVENT_ID, e.id)) // id = String
         }
 
         binding.btnRemove.setOnClickListener {
-            val e = selected
-            if (e == null) {
-                Toast.makeText(this, "Select the event to delete", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+            val e = selected ?: return@setOnClickListener Toast.makeText(this, "Select the event to delete", Toast.LENGTH_SHORT).show()
+            vm.delete(e.id) {
+                runOnUiThread { selected = null }
             }
-            store.delete(e.id)
-            selected = null
-            reload()
         }
+
         binding.btnSearch.setOnClickListener {
             startActivity(Intent(this, SearchEventsActivity::class.java))
         }
 
-
-        selectedDayStart = dayStart(System.currentTimeMillis())
-        reload()
+        lifecycleScope.launchWhenStarted {
+            vm.events.collectLatest { list ->
+                adapter.submit(list)
+                binding.emptyView.text = if (list.isEmpty()) "There are no events" else ""
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        reload()
-    }
-
-    private fun reload() {
-        val all = store.getAll()
-        val start = selectedDayStart
-        val end = start + 24L * 60 * 60 * 1000
-        val dayEvents = all.filter { it.timeMillis in start until end }.sortedBy { it.timeMillis }
-        adapter.submit(dayEvents)
-        binding.emptyView.text = if (dayEvents.isEmpty()) "There are no events" else ""
-    }
-
-    private fun dayStart(millis: Long): Long {
-        val c = Calendar.getInstance().apply {
-            timeInMillis = millis
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        return c.timeInMillis
+        vm.reload()
     }
 }

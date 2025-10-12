@@ -1,4 +1,4 @@
-package com.comixa.app.ui.labs.lab3.sources
+package com.comixa.app.adapter.lab3
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

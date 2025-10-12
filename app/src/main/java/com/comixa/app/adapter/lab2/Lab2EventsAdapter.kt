@@ -1,4 +1,4 @@
-package com.comixa.app.ui.labs.lab2
+package com.comixa.app.adapter.lab2
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,13 +11,13 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class SearchEventsAdapter(
+class Lab2EventsAdapter(
     private val onSelected: (Event) -> Unit
-) : RecyclerView.Adapter<SearchEventsAdapter.VH>() {
+) : RecyclerView.Adapter<Lab2EventsAdapter.VH>() {
 
     private val items = mutableListOf<Event>()
     private var selectedPos = RecyclerView.NO_POSITION
-    private val dtFmt = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+    private val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault())
 
     fun submit(list: List<Event>) {
         items.clear()
@@ -26,19 +26,16 @@ class SearchEventsAdapter(
         notifyDataSetChanged()
     }
 
-    fun getSelected(): Event? = items.getOrNull(selectedPos)
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_lab2_search_event, parent, false)
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_lab2_event, parent, false)
         return VH(v)
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val e = items[position]
-        holder.title.text = e.description
-        holder.subtitle.text = dtFmt.format(Date(e.timeMillis))
-        holder.itemView.isSelected = position == selectedPos
+        holder.time.text = timeFmt.format(Date(e.timeMillis))
+        holder.info.text = e.description
+        holder.root.isSelected = position == selectedPos
         holder.itemView.setOnClickListener {
             val old = selectedPos
             selectedPos = holder.bindingAdapterPosition
@@ -51,7 +48,9 @@ class SearchEventsAdapter(
     override fun getItemCount() = items.size
 
     class VH(v: View) : RecyclerView.ViewHolder(v) {
-        val title: TextView = v.findViewById(R.id.tvTitle)
-        val subtitle: TextView = v.findViewById(R.id.tvSubtitle)
+        val root: View = v.findViewById(R.id.root)
+        val time: TextView = v.findViewById(R.id.tvTime)
+        val info: TextView = v.findViewById(R.id.tvInfo)
     }
+
 }

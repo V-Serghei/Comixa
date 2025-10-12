@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.comixa.app.databinding.FragmentGenericBinding
-import com.comixa.app.viewmodel.LibrarySection1ViewModel
+import com.comixa.app.viewmodel.LibrarySection.LibrarySection1ViewModel
 
 class LibrarySection1Fragment : Fragment() {
 

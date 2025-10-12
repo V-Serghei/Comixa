@@ -1,4 +1,4 @@
-package com.comixa.app.ui.labs.lab3.sources
+package com.comixa.app.viewmodel.Lab3
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -14,7 +14,7 @@ class Lab3SourcesViewModel(app: Application) : AndroidViewModel(app) {
     private val repo = RssRepository(app)
 
     val sources = repo.observeSources()
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.Companion.Lazily, emptyList())
 
     fun add(url: String) = viewModelScope.launch(Dispatchers.IO) {
         repo.addSourceAndSync(url.trim())
