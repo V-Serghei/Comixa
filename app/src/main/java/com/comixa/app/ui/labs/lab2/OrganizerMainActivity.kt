@@ -77,6 +77,10 @@ class OrganizerMainActivity : AppCompatActivity() {
             selected = null
             reload()
         }
+        binding.btnSearch.setOnClickListener {
+            startActivity(Intent(this, SearchEventsActivity::class.java))
+        }
+
 
         selectedDayStart = dayStart(System.currentTimeMillis())
         reload()

@@ -48,6 +48,10 @@
             android:name=".ui.labs.lab2.UpdateActivity"
             android:exported="false"
             android:parentActivityName=".ui.labs.lab2.OrganizerMainActivity" />
+        <activity
+            android:name=".ui.labs.lab2.SearchEventsActivity"
+            android:exported="false"/>
+
 
     </application>
 </manifest>
