@@ -80,4 +80,30 @@
         android:name="com.comixa.app.ui.labs.lab2.Lab2EntryFragment"
         android:label="@string/lab_2" />
 
+    <fragment
+        android:id="@+id/nav_lab3_sources"
+        android:name="com.comixa.app.ui.labs.lab3.sources.Lab3SourcesFragment"
+        android:label="RSS Sources" >
+        <action
+            android:id="@+id/action_lab3_sources_to_items"
+            app:destination="@id/nav_lab3_items" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_lab3_items"
+        android:name="com.comixa.app.ui.labs.lab3.items.Lab3ItemsFragment"
+        android:label="Articles">
+        <argument
+            android:name="sourceId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_lab3_web"
+        android:name="com.comixa.app.ui.labs.lab3.web.Lab3WebFragment"
+        android:label="Browser">
+        <argument
+            android:name="url"
+            app:argType="string" />
+    </fragment>
+
 </navigation>

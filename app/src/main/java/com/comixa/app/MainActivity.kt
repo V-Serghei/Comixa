@@ -101,7 +101,13 @@ class MainActivity : AppCompatActivity() {
                     DrawerGroup("Lab2 (Organizer)", subItems = listOf(
                         DrawerSubItem("Calendar", R.id.nav_lab2)
 
-                    ))
+                    )),
+                    DrawerGroup(
+                        "Lab3 (RSS)",
+                        subItems = listOf(
+                            DrawerSubItem("Sources", R.id.nav_lab3_sources)
+                        )
+                )
                 )
             )
         )
