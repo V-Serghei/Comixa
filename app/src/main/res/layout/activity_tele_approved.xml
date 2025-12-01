@@ -87,6 +87,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvApprovedName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Jojon Suehndra"
@@ -104,6 +105,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvApprovedDisease"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sore Eyes"
@@ -121,6 +123,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvApprovedLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="St. Broxlyn 212"
@@ -138,6 +141,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvApprovedDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Aku ingin menjadi setitik awan kecil di langint bersama mentari yaga hah"

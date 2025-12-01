@@ -56,6 +56,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tvDoctorName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Dudung Sokmati"
@@ -64,6 +65,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvDoctorSpeciality"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -86,6 +88,7 @@
                             android:textSize="14sp" />
 
                         <TextView
+                            android:id="@+id/tvDoctorRating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="6dp"
@@ -113,6 +116,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvDoctorShortDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -143,6 +147,7 @@
                     app:tint="@color/tele_text_gray" />
 
                 <TextView
+                    android:id="@+id/tvDoctorLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"

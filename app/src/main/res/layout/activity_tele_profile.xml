@@ -44,6 +44,7 @@
                 android:src="@mipmap/ic_launcher_round" />
 
             <TextView
+                android:id="@+id/tvTeleProfileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -63,6 +64,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvTeleProfileUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="johndoe"
@@ -79,6 +81,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvTeleProfileEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="john@doe.com"
@@ -95,6 +98,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvTeleProfilePhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0000000000"
@@ -111,6 +115,7 @@
                 android:fontFamily="sans-serif-medium" />
 
             <TextView
+                android:id="@+id/tvTeleProfileLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="St. Bronxlyn 212"
