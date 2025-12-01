@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -34,6 +35,7 @@
         <activity
             android:name=".ui.preview.ImagePreviewActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.labs.lab2.OrganizerMainActivity"
             android:exported="false"
@@ -48,10 +50,66 @@
             android:name=".ui.labs.lab2.UpdateActivity"
             android:exported="false"
             android:parentActivityName=".ui.labs.lab2.OrganizerMainActivity" />
+
         <activity
             android:name=".ui.labs.lab2.SearchEventsActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".ui.telemedicine.TelemedicineSplashActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine.Splash" />
 
+        <activity
+            android:name=".ui.telemedicine.TelemedicineWelcomeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine" />
+
+        <activity
+            android:name=".ui.telemedicine.TelemedicineLoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine" />
+
+        <activity
+            android:name=".ui.telemedicine.TelemedicineRegisterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine" />
+
+        <activity
+            android:name=".ui.telemedicine.TelemedicineHomeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine" />
+
+        <activity
+            android:name=".ui.telemedicine.TelemedicineApprovedActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine" />
+        <activity
+            android:name=".ui.telemedicine.TelemedicineDoctorListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine" />
+
+        <activity
+            android:name=".ui.telemedicine.TelemedicineDoctorDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine" />
+
+        <activity
+            android:name=".ui.telemedicine.TelemedicineProfileActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Comixa.Telemedicine" />
+
+        <activity
+            android:name=".ui.telemedicine.TelemedicineScheduleActivity"
+            android:exported="false" />
     </application>
 </manifest>

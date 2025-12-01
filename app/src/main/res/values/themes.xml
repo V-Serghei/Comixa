@@ -73,4 +73,10 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">24dp</item>
     </style>
+    <style name="Theme.Comixa.Telemedicine" parent="Theme.Comixa">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="Theme.Comixa.Telemedicine.Splash" parent="Theme.Comixa.Telemedicine" />
 </resources>

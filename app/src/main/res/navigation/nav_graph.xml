@@ -109,5 +109,8 @@
         android:id="@+id/nav_lab4"
         android:name="com.comixa.app.ui.labs.lab4.Lab4Fragment"
         android:label="@string/menu_lab4" />
-
+    <fragment
+        android:id="@+id/nav_lab5_telemedicine"
+        android:name="com.comixa.app.ui.labs.lab5.Lab5TelemedicineFragment"
+        android:label="@string/menu_lab5_telemedicine" />
 </navigation>

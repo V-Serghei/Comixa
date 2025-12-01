@@ -63,4 +63,8 @@
     <string name="menu_lab4">Lab4: Custom Loader</string>
     <string name="lab4_start_task">Start async task (5s)</string>
     <string name="lab4_stop">Stop</string>
+    <string name="telemedicine">Telemedicine</string>
+    <string name="menu_lab5_telemedicine">Lab5 (Telemedicine)</string>
+    <string name="email_address">Email Address</string>
+
 </resources>

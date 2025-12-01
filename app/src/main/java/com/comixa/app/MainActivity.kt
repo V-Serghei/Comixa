@@ -95,13 +95,14 @@ class MainActivity : AppCompatActivity() {
                         title = "Lab1",
                         subItems = listOf(
                             DrawerSubItem("Panel", R.id.nav_lab1_panel)
-
                         )
                     ),
-                    DrawerGroup("Lab2 (Organizer)", subItems = listOf(
-                        DrawerSubItem("Calendar", R.id.nav_lab2)
-
-                    )),
+                    DrawerGroup(
+                        "Lab2 (Organizer)",
+                        subItems = listOf(
+                            DrawerSubItem("Calendar", R.id.nav_lab2)
+                        )
+                    ),
                     DrawerGroup(
                         "Lab3 (RSS)",
                         subItems = listOf(
@@ -113,16 +114,24 @@ class MainActivity : AppCompatActivity() {
                         subItems = listOf(
                             DrawerSubItem("Demo", R.id.nav_lab4)
                         )
+                    ),
+                    DrawerGroup(
+                        "Lab5 (Telemedicine)",
+                        subItems = listOf(
+                            DrawerSubItem("Telemedicine UI", R.id.nav_lab5_telemedicine)
+                        )
                     )
                 )
             )
         )
+
         binding.drawerRecycler.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = DrawerAdapter(navController, drawerLayout, sections)
             setHasFixedSize(true)
         }
     }
+
     private fun forceHamburger() {
         binding.toolbar.navigationIcon = DrawerArrowDrawable(this).apply {
             progress = 0f
@@ -131,6 +140,7 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.open()
         }
     }
+
     override fun onSupportNavigateUp(): Boolean {
         drawerLayout.open()
         return true

@@ -87,5 +87,9 @@
                     android:title="@string/menu_settings_section2" />
             </menu>
         </item>
+        <item
+            android:id="@+id/nav_lab5_telemedicine"
+            android:icon="@android:drawable/ic_menu_agenda"
+            android:title="@string/menu_lab5_telemedicine" />
     </group>
 </menu>
