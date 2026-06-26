@@ -15,6 +15,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:domain"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
     implementation(project(":feature:library"))
@@ -29,4 +30,5 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.hilt.navigation)
     implementation(libs.core.ktx)
+    implementation(libs.appcompat)
 }

@@ -6,9 +6,12 @@ import com.comixa.core.data.db.ComixaDatabase
 import com.comixa.core.data.repository.BookmarkRepositoryImpl
 import com.comixa.core.data.repository.ComicRepositoryImpl
 import com.comixa.core.data.repository.ProgressRepositoryImpl
+import com.comixa.core.data.source.LocalFolderSource
 import com.comixa.core.domain.repository.BookmarkRepository
 import com.comixa.core.domain.repository.ComicRepository
 import com.comixa.core.domain.repository.ProgressRepository
+import com.comixa.core.domain.source.ComicSource
+import com.comixa.core.domain.usecase.ScanLibraryUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -25,6 +28,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): ComixaDatabase =
         Room.databaseBuilder(context, ComixaDatabase::class.java, "comixa.db")
+            .fallbackToDestructiveMigration()
             .build()
 
     @Provides fun provideComicDao(db: ComixaDatabase) = db.comicDao()
@@ -44,4 +48,19 @@ abstract class RepositoryModule {
 
     @Binds @Singleton
     abstract fun bindProgressRepository(impl: ProgressRepositoryImpl): ProgressRepository
+
+    @Binds @Singleton
+    abstract fun bindComicSource(impl: LocalFolderSource): ComicSource
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object UseCaseModule {
+
+    @Provides
+    @Singleton
+    fun provideScanLibraryUseCase(
+        source: ComicSource,
+        repository: ComicRepository,
+    ): ScanLibraryUseCase = ScanLibraryUseCase(source, repository)
 }
