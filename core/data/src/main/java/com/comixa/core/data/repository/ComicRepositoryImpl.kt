@@ -18,6 +18,9 @@ class ComicRepositoryImpl @Inject constructor(
     override suspend fun getById(id: Long): ComicBook? =
         dao.getById(id)?.toDomain()
 
+    override suspend fun insertIfNotExists(book: ComicBook): Long =
+        dao.insertIfNotExists(ComicBookEntity.fromDomain(book))
+
     override suspend fun upsert(book: ComicBook): Long =
         dao.upsert(ComicBookEntity.fromDomain(book))
 

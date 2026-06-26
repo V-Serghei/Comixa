@@ -1,6 +1,8 @@
 package com.comixa.core.data.db.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.comixa.core.data.db.entity.ComicBookEntity
@@ -13,6 +15,9 @@ interface ComicDao {
 
     @Query("SELECT * FROM comic_books WHERE id = :id")
     suspend fun getById(id: Long): ComicBookEntity?
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIfNotExists(entity: ComicBookEntity): Long
 
     @Upsert
     suspend fun upsert(entity: ComicBookEntity): Long

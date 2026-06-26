@@ -12,15 +12,18 @@ local.properties
 **/.DS_Store
 Thumbs.db
 
-# Android Studio / IntelliJ generated
-captures/
-.externalNativeBuild/
-.cxx/
+# IDE
 .idea/
+.vscode/
 *.iml
 misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
+
+# Android Studio generated
+captures/
+.externalNativeBuild/
+.cxx/
 
 # Build outputs
 *.aab
