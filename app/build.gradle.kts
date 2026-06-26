@@ -30,4 +30,5 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.hilt.navigation)
     implementation(libs.core.ktx)
+    implementation(libs.appcompat)
 }
