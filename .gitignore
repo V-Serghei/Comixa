@@ -1,34 +1,47 @@
-# Gradle files
+# Gradle
 .gradle/
 build/
+out/
 
-# Local configuration file (sdk path, etc)
+# Local configuration (SDK path, signing keys)
 local.properties
 
-# Log/OS Files
+# Logs and OS files
 *.log
+.DS_Store
+**/.DS_Store
+Thumbs.db
 
-# Android Studio generated files and folders
+# Android Studio / IntelliJ generated
 captures/
 .externalNativeBuild/
 .cxx/
-*.aab
-*.apk
-output-metadata.json
-
-# IntelliJ
-*.iml
 .idea/
+*.iml
 misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
 
-# Keystore files
+# Build outputs
+*.aab
+*.apk
+output-metadata.json
+
+# Kotlin incremental compilation cache
+.kotlin/
+
+# ProGuard mapping output (keep rules in VCS, not outputs)
+proguard/
+
+# Keystore / signing (NEVER commit these)
 *.jks
 *.keystore
 
-# Google Services (e.g. APIs or Firebase)
+# Google Services (contains API keys)
 google-services.json
 
-# Android Profiling
+# Android profiling
 *.hprof
+
+# Merge conflict leftovers
+*.orig
