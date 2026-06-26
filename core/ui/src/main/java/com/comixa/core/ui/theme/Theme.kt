@@ -1,11 +1,11 @@
-package com.comixa.app.ui.theme
+package com.comixa.core.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
+val ComixaColorScheme = darkColorScheme(
     primary = Color(0xFF00D47B),
     onPrimary = Color(0xFF001B12),
     primaryContainer = Color(0xFF063E2B),
@@ -32,8 +32,8 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun ComixaTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = DarkColorScheme,
-        typography = Typography,
-        content = content
+        colorScheme = ComixaColorScheme,
+        typography = ComixaTypography,
+        content = content,
     )
 }
