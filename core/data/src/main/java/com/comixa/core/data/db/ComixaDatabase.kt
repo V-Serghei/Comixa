@@ -11,7 +11,7 @@ import com.comixa.core.data.db.entity.ReadingProgressEntity
 
 @Database(
     entities = [ComicBookEntity::class, BookmarkEntity::class, ReadingProgressEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class ComixaDatabase : RoomDatabase() {

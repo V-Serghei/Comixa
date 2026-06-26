@@ -1,11 +1,15 @@
 package com.comixa.core.data.db.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.comixa.core.domain.model.ComicBook
 import com.comixa.core.domain.model.ComicFormat
 
-@Entity(tableName = "comic_books")
+@Entity(
+    tableName = "comic_books",
+    indices = [Index(value = ["filePath"], unique = true)],
+)
 data class ComicBookEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
