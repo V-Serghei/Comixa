@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base -->
+    <!-- Background / Surface -->
     <color name="md_bg">#0B0F12</color>
     <color name="md_surface">#0E131A</color>
     <color name="md_surface_variant">#1A212B</color>
@@ -8,22 +8,25 @@
     <color name="md_on_surface_variant">#A8B3C2</color>
     <color name="md_outline">#3A4654</color>
 
-    <!-- Accent -->
+    <!-- Primary (green accent) -->
     <color name="md_primary">#00D47B</color>
     <color name="md_on_primary">#001B12</color>
     <color name="md_primary_container">#063E2B</color>
     <color name="md_on_primary_container">#9BFFD9</color>
 
+    <!-- Secondary (purple) -->
     <color name="md_secondary">#A78BFA</color>
     <color name="md_on_secondary">#1C1233</color>
     <color name="md_secondary_container">#2A1F49</color>
     <color name="md_on_secondary_container">#E6DCFF</color>
 
+    <!-- Tertiary (blue) -->
     <color name="md_tertiary">#7DD3FC</color>
     <color name="md_on_tertiary">#001923</color>
     <color name="md_tertiary_container">#073244</color>
     <color name="md_on_tertiary_container">#CDEFFF</color>
 
+    <!-- Error -->
     <color name="md_error">#FFB4AB</color>
     <color name="md_on_error">#311000</color>
     <color name="md_error_container">#93000A</color>
@@ -34,15 +37,6 @@
     <color name="md_inverse_on_surface">#0B0F12</color>
     <color name="md_inverse_primary">#007A4B</color>
 
-    <!-- Launcher background -->
+    <!-- Launcher -->
     <color name="ic_launcher_background">#0B0F12</color>
-    <color name="telemedicine_green">#00C853</color>
-    <color name="white">#FFFFFFFF</color>
-
-    <color name="tele_green">#00C853</color>
-    <color name="tele_green_dark">#00B84B</color>
-    <color name="tele_white">#FFFFFFFF</color>
-    <color name="tele_text_gray">#90A4AE</color>
-    <color name="tele_input_border">#D0D7DF</color>
-
 </resources>

@@ -1,0 +1,47 @@
+package com.comixa.core.data.di
+
+import android.content.Context
+import androidx.room.Room
+import com.comixa.core.data.db.ComixaDatabase
+import com.comixa.core.data.repository.BookmarkRepositoryImpl
+import com.comixa.core.data.repository.ComicRepositoryImpl
+import com.comixa.core.data.repository.ProgressRepositoryImpl
+import com.comixa.core.domain.repository.BookmarkRepository
+import com.comixa.core.domain.repository.ComicRepository
+import com.comixa.core.domain.repository.ProgressRepository
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): ComixaDatabase =
+        Room.databaseBuilder(context, ComixaDatabase::class.java, "comixa.db")
+            .build()
+
+    @Provides fun provideComicDao(db: ComixaDatabase) = db.comicDao()
+    @Provides fun provideBookmarkDao(db: ComixaDatabase) = db.bookmarkDao()
+    @Provides fun provideProgressDao(db: ComixaDatabase) = db.progressDao()
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+
+    @Binds @Singleton
+    abstract fun bindComicRepository(impl: ComicRepositoryImpl): ComicRepository
+
+    @Binds @Singleton
+    abstract fun bindBookmarkRepository(impl: BookmarkRepositoryImpl): BookmarkRepository
+
+    @Binds @Singleton
+    abstract fun bindProgressRepository(impl: ProgressRepositoryImpl): ProgressRepository
+}

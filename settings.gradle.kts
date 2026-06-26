@@ -1,4 +1,7 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -11,7 +14,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-@file:Suppress("UnstableApiUsage")
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -20,9 +22,17 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
+
 rootProject.name = "Comixa"
+
 include(":app")
-include(":app:data")
+include(":core:domain")
+include(":core:data")
+include(":core:ui")
+include(":feature:library")
+include(":feature:reader")
+include(":feature:settings")
