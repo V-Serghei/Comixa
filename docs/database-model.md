@@ -67,20 +67,33 @@ Stored in user preferences (DataStore), not in Room.
 
 ---
 
+### `watched_folders`
+
+Stores folders the user has explicitly chosen to scan. Device-local only — not synced.
+
+| Column   | Type    | Constraints               | Notes                    |
+|----------|---------|---------------------------|--------------------------|
+| id       | INTEGER | PRIMARY KEY AUTOINCREMENT |                          |
+| path     | TEXT    | NOT NULL, UNIQUE          | Absolute filesystem path |
+| addedAt  | INTEGER | NOT NULL                  | Unix epoch milliseconds  |
+
+---
+
 ## Room Database
 
 - **Class:** `ComixaDatabase`
-- **Version:** 2
+- **Version:** 3
 - **Schema export:** enabled (`schemas/` directory)
-- **Entities:** `ComicBookEntity`, `ReadingProgressEntity`, `BookmarkEntity`
+- **Entities:** `ComicBookEntity`, `ReadingProgressEntity`, `BookmarkEntity`, `WatchedFolderEntity`
 
 ---
 
 ## Migration history
 
-| From → To | Change                     |
-|-----------|----------------------------|
-| 1 → 2     | *(document here as needed)* |
+| From → To | Change                                          |
+|-----------|-------------------------------------------------|
+| 1 → 2     | Added unique index on `comic_books.filePath`    |
+| 2 → 3     | Added `watched_folders` table                   |
 
 ---
 

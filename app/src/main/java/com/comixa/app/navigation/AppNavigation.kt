@@ -27,14 +27,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.comixa.feature.library.FolderPickerScreen
 import com.comixa.feature.library.LibraryScreen
 import com.comixa.feature.reader.ReaderScreen
 import com.comixa.feature.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
-private const val ROUTE_LIBRARY  = "library"
-private const val ROUTE_READER   = "reader/{bookId}"
-private const val ROUTE_SETTINGS = "settings"
+private const val ROUTE_LIBRARY       = "library"
+private const val ROUTE_READER        = "reader/{bookId}"
+private const val ROUTE_SETTINGS      = "settings"
+private const val ROUTE_FOLDER_PICKER = "folder_picker"
 
 @Composable
 fun AppNavigation(
@@ -121,6 +123,7 @@ fun AppNavigation(
                 LibraryScreen(
                     onBookClick = { book -> navController.navigate("reader/${book.id}") },
                     openDrawer = openDrawer,
+                    onBrowseFolders = { navController.navigate(ROUTE_FOLDER_PICKER) },
                 )
             }
 
@@ -135,6 +138,12 @@ fun AppNavigation(
 
             composable(ROUTE_SETTINGS) {
                 SettingsScreen(openDrawer = openDrawer)
+            }
+
+            composable(ROUTE_FOLDER_PICKER) {
+                FolderPickerScreen(
+                    onDone = { navController.popBackStack() },
+                )
             }
         }
     }
