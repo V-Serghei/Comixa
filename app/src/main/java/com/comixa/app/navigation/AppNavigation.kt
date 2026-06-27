@@ -1,5 +1,6 @@
 package com.comixa.app.navigation
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.comixa.feature.library.FolderPickerScreen
 import com.comixa.feature.library.LibraryScreen
+import com.comixa.feature.library.SeriesScreen
 import com.comixa.feature.reader.ReaderScreen
 import com.comixa.feature.settings.SettingsScreen
 import kotlinx.coroutines.launch
@@ -39,6 +41,7 @@ private const val ROUTE_LIBRARY       = "library"
 private const val ROUTE_READER        = "reader/{bookId}"
 private const val ROUTE_SETTINGS      = "settings"
 private const val ROUTE_FOLDER_PICKER = "folder_picker"
+private const val ROUTE_SERIES        = "series/{seriesName}"
 
 @Composable
 fun AppNavigation(
@@ -124,6 +127,7 @@ fun AppNavigation(
             composable(ROUTE_LIBRARY) {
                 LibraryScreen(
                     onBookClick = { book -> navController.navigate("reader/${book.id}") },
+                    onSeriesClick = { name -> navController.navigate("series/${Uri.encode(name)}") },
                     openDrawer = openDrawer,
                     onBrowseFolders = { navController.navigate(ROUTE_FOLDER_PICKER) },
                 )
@@ -147,6 +151,17 @@ fun AppNavigation(
             composable(ROUTE_FOLDER_PICKER) {
                 FolderPickerScreen(
                     onDone = { navController.popBackStack() },
+                )
+            }
+
+            composable(
+                route = ROUTE_SERIES,
+                arguments = listOf(navArgument("seriesName") { type = NavType.StringType }),
+            ) { backStack ->
+                val seriesName = backStack.arguments?.getString("seriesName") ?: return@composable
+                SeriesScreen(
+                    onBookClick = { book -> navController.navigate("reader/${book.id}") },
+                    onBack = { navController.popBackStack() },
                 )
             }
         }

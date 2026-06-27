@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,8 +28,20 @@ data class BookWithProgress(
     val progress: ReadingProgress?,
 )
 
+sealed interface LibraryItem {
+    data class Single(val item: BookWithProgress) : LibraryItem
+
+    data class Series(
+        val name: String,
+        val books: List<BookWithProgress>,
+    ) : LibraryItem {
+        val cover: BookWithProgress get() = books.minByOrNull { it.book.issueNumber ?: Int.MAX_VALUE }!!
+        val readCount: Int get() = books.count { it.progress != null }
+    }
+}
+
 data class LibraryUiState(
-    val books: List<BookWithProgress> = emptyList(),
+    val items: List<LibraryItem> = emptyList(),
     val isScanning: Boolean = false,
 )
 
@@ -50,8 +63,9 @@ class LibraryViewModel @Inject constructor(
         _isScanning,
     ) { books, allProgress, scanning ->
         val progressMap = allProgress.associateBy { it.bookId }
+        val withProgress = books.map { BookWithProgress(it, progressMap[it.id]) }
         LibraryUiState(
-            books = books.map { BookWithProgress(it, progressMap[it.id]) },
+            items = groupIntoLibraryItems(withProgress),
             isScanning = scanning,
         )
     }.stateIn(
@@ -81,6 +95,31 @@ class LibraryViewModel @Inject constructor(
                 scanUseCase().collect { }
             } finally {
                 _isScanning.update { false }
+            }
+        }
+    }
+
+    private fun groupIntoLibraryItems(books: List<BookWithProgress>): List<LibraryItem> {
+        val grouped = books.groupBy { it.book.seriesName }
+
+        val singles = grouped[null]?.map { LibraryItem.Single(it) } ?: emptyList()
+
+        val seriesAndSingles = grouped
+            .filterKeys { it != null }
+            .flatMap { (name, seriesBooks) ->
+                val sorted = seriesBooks.sortedBy { it.book.issueNumber ?: Int.MAX_VALUE }
+                if (sorted.size == 1) {
+                    listOf(LibraryItem.Single(sorted.first()))
+                } else {
+                    listOf(LibraryItem.Series(name!!, sorted))
+                }
+            }
+
+        return (singles + seriesAndSingles).sortedBy { item ->
+            when (item) {
+                is LibraryItem.Single -> item.item.book.seriesName?.lowercase()
+                    ?: item.item.book.title.lowercase()
+                is LibraryItem.Series -> item.name.lowercase()
             }
         }
     }

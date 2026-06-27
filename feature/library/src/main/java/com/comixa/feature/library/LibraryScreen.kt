@@ -1,7 +1,6 @@
 package com.comixa.feature.library
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
@@ -35,6 +34,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -69,6 +70,7 @@ import com.comixa.core.domain.model.ComicPageKey
 @Composable
 fun LibraryScreen(
     onBookClick: (ComicBook) -> Unit,
+    onSeriesClick: (String) -> Unit,
     openDrawer: () -> Unit,
     onBrowseFolders: () -> Unit,
     modifier: Modifier = Modifier,
@@ -137,7 +139,7 @@ fun LibraryScreen(
                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
             }
 
-            if (state.books.isEmpty()) {
+            if (state.items.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
@@ -155,10 +157,139 @@ fun LibraryScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(items = state.books, key = { it.book.id }) { item ->
-                        BookCard(item = item, onClick = { onBookClick(item.book) })
+                    items(
+                        items = state.items,
+                        key = { item ->
+                            when (item) {
+                                is LibraryItem.Single -> "book_${item.item.book.id}"
+                                is LibraryItem.Series -> "series_${item.name}"
+                            }
+                        },
+                    ) { item ->
+                        when (item) {
+                            is LibraryItem.Single -> BookCard(
+                                item = item.item,
+                                onClick = { onBookClick(item.item.book) },
+                            )
+                            is LibraryItem.Series -> SeriesCard(
+                                series = item,
+                                onClick = { onSeriesClick(item.name) },
+                            )
+                        }
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BookCard(
+    item: BookWithProgress,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+    ) {
+        Column {
+            AsyncImage(
+                model = ComicPageKey(filePath = item.book.filePath, pageIndex = 0, format = item.book.format),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(2f / 3f),
+            )
+            val progress = item.progress
+            if (progress != null && progress.totalPages > 0) {
+                LinearProgressIndicator(
+                    progress = { (progress.currentPage + 1).toFloat() / progress.totalPages },
+                    modifier = Modifier.fillMaxWidth().height(3.dp),
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+            Column(
+                modifier = Modifier.padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = item.book.title,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = item.book.format.name,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SeriesCard(
+    series: LibraryItem.Series,
+    onClick: () -> Unit,
+) {
+    val cover = series.cover
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+    ) {
+        Column {
+            BadgedBox(
+                badge = {
+                    Badge(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ) {
+                        Text(
+                            text = series.books.size.toString(),
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(2f / 3f),
+            ) {
+                AsyncImage(
+                    model = ComicPageKey(
+                        filePath = cover.book.filePath,
+                        pageIndex = 0,
+                        format = cover.book.format,
+                    ),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            if (series.readCount > 0) {
+                LinearProgressIndicator(
+                    progress = { series.readCount.toFloat() / series.books.size },
+                    modifier = Modifier.fillMaxWidth().height(3.dp),
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
+            Column(
+                modifier = Modifier.padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    text = series.name,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = "${series.books.size} issues",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                )
             }
         }
     }
@@ -222,54 +353,5 @@ private fun SpeedDialItem(
         }
         Spacer(Modifier.width(12.dp))
         SmallFloatingActionButton(onClick = onClick) { icon() }
-    }
-}
-
-@Composable
-private fun BookCard(
-    item: BookWithProgress,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-    ) {
-        Column {
-            AsyncImage(
-                model = ComicPageKey(filePath = item.book.filePath, pageIndex = 0, format = item.book.format),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(2f / 3f),
-            )
-            val progress = item.progress
-            if (progress != null && progress.totalPages > 0) {
-                LinearProgressIndicator(
-                    progress = { (progress.currentPage + 1).toFloat() / progress.totalPages },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(3.dp),
-                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                )
-            }
-            Column(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-                Text(
-                    text = item.book.title,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    text = item.book.format.name,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }
     }
 }
