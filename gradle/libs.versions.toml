@@ -40,6 +40,7 @@ compose-material3      = { group = "androidx.compose.material3", name = "materia
 activity-compose       = { group = "androidx.activity",         name = "activity-compose",       version.ref = "activity-compose" }
 
 # --- Navigation ---
+material-icons-core = { module = "androidx.compose.material:material-icons-core" }
 navigation-compose     = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 
 # --- Lifecycle ---
