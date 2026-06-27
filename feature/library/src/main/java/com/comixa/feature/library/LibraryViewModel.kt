@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comixa.core.data.source.LocalFolderSource
 import com.comixa.core.domain.model.ComicBook
+import com.comixa.core.domain.model.ReadingProgress
 import com.comixa.core.domain.repository.ComicRepository
+import com.comixa.core.domain.repository.ProgressRepository
 import com.comixa.core.domain.repository.WatchedFolderRepository
 import com.comixa.core.domain.usecase.ScanLibraryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,8 +22,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class BookWithProgress(
+    val book: ComicBook,
+    val progress: ReadingProgress?,
+)
+
 data class LibraryUiState(
-    val books: List<ComicBook> = emptyList(),
+    val books: List<BookWithProgress> = emptyList(),
     val isScanning: Boolean = false,
 )
 
@@ -31,6 +38,7 @@ class LibraryViewModel @Inject constructor(
     private val scanUseCase: ScanLibraryUseCase,
     private val localSource: LocalFolderSource,
     watchedFolderRepository: WatchedFolderRepository,
+    progressRepository: ProgressRepository,
 ) : ViewModel() {
 
     private val _isScanning = MutableStateFlow(false)
@@ -38,9 +46,14 @@ class LibraryViewModel @Inject constructor(
 
     val uiState: StateFlow<LibraryUiState> = combine(
         repository.getAll(),
+        progressRepository.getAll(),
         _isScanning,
-    ) { books, scanning ->
-        LibraryUiState(books = books, isScanning = scanning)
+    ) { books, allProgress, scanning ->
+        val progressMap = allProgress.associateBy { it.bookId }
+        LibraryUiState(
+            books = books.map { BookWithProgress(it, progressMap[it.id]) },
+            isScanning = scanning,
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -48,7 +61,6 @@ class LibraryViewModel @Inject constructor(
     )
 
     init {
-        // Re-scan automatically whenever watched folders list changes (incl. initial load)
         viewModelScope.launch {
             watchedFolderRepository.getAll()
                 .distinctUntilChanged()

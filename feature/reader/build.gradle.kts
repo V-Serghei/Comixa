@@ -25,4 +25,5 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.zip4j)
+    implementation(libs.junrar)
 }

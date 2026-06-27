@@ -9,16 +9,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.comixa.core.domain.model.ComicBook
 import com.comixa.core.domain.model.ComicFormat
+import com.comixa.core.domain.model.ReadingDirection
 import com.comixa.core.domain.model.ReadingProgress
-import com.github.junrar.Archive
 import com.comixa.core.domain.repository.ComicRepository
 import com.comixa.core.domain.repository.ProgressRepository
+import com.comixa.core.domain.repository.UserPreferencesRepository
+import com.github.junrar.Archive
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import net.lingala.zip4j.ZipFile
@@ -39,12 +44,17 @@ class ReaderViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val comicRepository: ComicRepository,
     private val progressRepository: ProgressRepository,
+    prefsRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
-    private val bookId: Long = checkNotNull(savedStateHandle["bookId"]) { "bookId arg is required in SavedStateHandle" }
+    private val bookId: Long = checkNotNull(savedStateHandle["bookId"]) { "bookId arg is required" }
 
     private val _uiState = MutableStateFlow(ReaderUiState())
     val uiState: StateFlow<ReaderUiState> = _uiState.asStateFlow()
+
+    val readingDirection: StateFlow<ReadingDirection> = prefsRepository.get()
+        .map { it.readingDirection }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ReadingDirection.LEFT_TO_RIGHT)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
