@@ -26,6 +26,7 @@ dependencies {
     implementation(composeBom)
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
+    implementation("androidx.compose.material:material-icons-core")
     implementation(libs.activity.compose)
     implementation(libs.navigation.compose)
     implementation(libs.hilt.navigation)

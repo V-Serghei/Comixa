@@ -21,6 +21,7 @@ import javax.inject.Inject
 data class LibraryUiState(
     val books: List<ComicBook> = emptyList(),
     val isScanning: Boolean = false,
+    val showPermissionDialog: Boolean = false,
 )
 
 @HiltViewModel
@@ -31,18 +32,28 @@ class LibraryViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _isScanning = MutableStateFlow(false)
+    private val _showPermissionDialog = MutableStateFlow(false)
     private var scanJob: Job? = null
 
     val uiState: StateFlow<LibraryUiState> = combine(
         repository.getAll(),
         _isScanning,
-    ) { books, scanning ->
-        LibraryUiState(books = books, isScanning = scanning)
+        _showPermissionDialog,
+    ) { books, scanning, showDialog ->
+        LibraryUiState(books = books, isScanning = scanning, showPermissionDialog = showDialog)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = LibraryUiState(),
     )
+
+    fun showPermissionDialog() {
+        _showPermissionDialog.update { true }
+    }
+
+    fun dismissPermissionDialog() {
+        _showPermissionDialog.update { false }
+    }
 
     fun onFolderSelected(uri: Uri) {
         localSource.setRootUri(uri)

@@ -3,6 +3,9 @@ package com.comixa.core.data.source
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import com.comixa.core.data.scanner.DirectoryScanner
 import com.comixa.core.data.scanner.FileScanner
 import com.comixa.core.data.scanner.MediaStoreScanner
 import com.comixa.core.data.scanner.ScannedFile
@@ -20,6 +23,7 @@ class LocalFolderSource @Inject constructor(
     @ApplicationContext private val context: Context,
     private val fileScanner: FileScanner,
     private val mediaStoreScanner: MediaStoreScanner,
+    private val directoryScanner: DirectoryScanner,
 ) : ComicSource {
 
     override val sourceId: String = "local"
@@ -37,6 +41,13 @@ class LocalFolderSource @Inject constructor(
 
     override fun scan(): Flow<ComicBook> {
         val now = System.currentTimeMillis()
+
+        // Android 11+ with MANAGE_EXTERNAL_STORAGE: direct File API — no SAF restrictions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
+            return directoryScanner.scan().toComicBookFlow(now)
+        }
+
+        // Fallback: MediaStore (fast, indexed) + SAF folder the user picked
         val mediaFlow = mediaStoreScanner.scan().toComicBookFlow(now)
         val safUri = rootUri
         return if (safUri != null) {
