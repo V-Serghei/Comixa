@@ -23,10 +23,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.comixa.feature.library.FolderPickerScreen
 import com.comixa.feature.library.LibraryScreen
 import com.comixa.feature.reader.ReaderScreen
@@ -127,9 +129,11 @@ fun AppNavigation(
                 )
             }
 
-            composable(ROUTE_READER) { backStack ->
-                val bookId = backStack.arguments?.getString("bookId")?.toLongOrNull()
-                    ?: return@composable
+            composable(
+                route = ROUTE_READER,
+                arguments = listOf(navArgument("bookId") { type = NavType.LongType }),
+            ) { backStack ->
+                val bookId = backStack.arguments?.getLong("bookId") ?: return@composable
                 ReaderScreen(
                     bookId = bookId,
                     onBack = { navController.popBackStack() },

@@ -32,4 +32,5 @@ dependencies {
     implementation(libs.hilt.navigation)
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
+    implementation(libs.coil.compose)
 }
