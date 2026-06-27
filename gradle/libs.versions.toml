@@ -22,6 +22,7 @@ espresso                = "3.7.0"
 
 [libraries]
 # --- Gradle plugins (for build-logic) ---
+androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
 build-android-gradle        = { group = "com.android.tools.build",   name = "gradle",                                version.ref = "agp" }
 build-kotlin-gradle         = { group = "org.jetbrains.kotlin",       name = "kotlin-gradle-plugin",                  version.ref = "kotlin" }
 build-kotlin-compose-gradle = { group = "org.jetbrains.kotlin",       name = "compose-compiler-gradle-plugin",        version.ref = "kotlin" }
