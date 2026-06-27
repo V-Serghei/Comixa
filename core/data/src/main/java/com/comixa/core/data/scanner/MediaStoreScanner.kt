@@ -36,6 +36,7 @@ class MediaStoreScanner @Inject constructor(
             append("${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE '%.pdf'")
             append(" OR ${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE '%.cbz'")
             append(" OR ${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE '%.zip'")
+            append(" OR ${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE '%.cbr'")
             append(")")
             append(" AND ${MediaStore.Files.FileColumns.SIZE} > 0")
         }

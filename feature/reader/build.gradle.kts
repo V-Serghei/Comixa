@@ -16,12 +16,14 @@ dependencies {
     implementation(composeBom)
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
+    implementation(libs.material.icons.extended)
 
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.hilt.navigation)
     implementation(libs.navigation.compose)
+    implementation(libs.coil.compose)
 
-    // zip4j нужен для рендера страниц CBZ
     implementation(libs.zip4j)
+    implementation(libs.junrar)
 }

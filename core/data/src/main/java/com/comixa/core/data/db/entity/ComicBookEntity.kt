@@ -13,6 +13,8 @@ import com.comixa.core.domain.model.ComicFormat
 data class ComicBookEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
+    val seriesName: String? = null,
+    val issueNumber: Int? = null,
     val filePath: String,
     val format: String,
     val pageCount: Int = 0,
@@ -22,6 +24,8 @@ data class ComicBookEntity(
     fun toDomain() = ComicBook(
         id = id,
         title = title,
+        seriesName = seriesName,
+        issueNumber = issueNumber,
         filePath = filePath,
         format = ComicFormat.valueOf(format),
         pageCount = pageCount,
@@ -33,6 +37,8 @@ data class ComicBookEntity(
         fun fromDomain(book: ComicBook) = ComicBookEntity(
             id = book.id,
             title = book.title,
+            seriesName = book.seriesName,
+            issueNumber = book.issueNumber,
             filePath = book.filePath,
             format = book.format.name,
             pageCount = book.pageCount,

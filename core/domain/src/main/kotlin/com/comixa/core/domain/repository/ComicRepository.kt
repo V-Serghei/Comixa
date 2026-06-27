@@ -10,4 +10,5 @@ interface ComicRepository {
     suspend fun upsert(book: ComicBook): Long
     suspend fun delete(bookId: Long)
     suspend fun updatePageCount(bookId: Long, pageCount: Int)
+    fun getBySeries(seriesName: String): Flow<List<ComicBook>>
 }

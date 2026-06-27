@@ -3,15 +3,22 @@ package com.comixa.core.data.source
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import com.comixa.core.data.scanner.DirectoryScanner
 import com.comixa.core.data.scanner.FileScanner
 import com.comixa.core.data.scanner.MediaStoreScanner
 import com.comixa.core.data.scanner.ScannedFile
 import com.comixa.core.domain.model.ComicBook
+import com.comixa.core.domain.repository.WatchedFolderRepository
 import com.comixa.core.domain.source.ComicSource
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,6 +27,8 @@ class LocalFolderSource @Inject constructor(
     @ApplicationContext private val context: Context,
     private val fileScanner: FileScanner,
     private val mediaStoreScanner: MediaStoreScanner,
+    private val directoryScanner: DirectoryScanner,
+    private val watchedFolderRepository: WatchedFolderRepository,
 ) : ComicSource {
 
     override val sourceId: String = "local"
@@ -37,17 +46,27 @@ class LocalFolderSource @Inject constructor(
 
     override fun scan(): Flow<ComicBook> {
         val now = System.currentTimeMillis()
-        val mediaFlow = mediaStoreScanner.scan().toComicBookFlow(now)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()) {
+            return flow {
+                val watched = watchedFolderRepository.getSnapshot()
+                val roots = if (watched.isEmpty()) {
+                    listOf(Environment.getExternalStorageDirectory())
+                } else {
+                    watched.map { File(it.path) }
+                }
+                emitAll(directoryScanner.scan(roots).map { it.toComicBook(now) })
+            }
+        }
+
+        val mediaFlow = mediaStoreScanner.scan().map { it.toComicBook(now) }
         val safUri = rootUri
         return if (safUri != null) {
-            merge(mediaFlow, fileScanner.scan(safUri).toComicBookFlow(now))
+            merge(mediaFlow, fileScanner.scan(safUri).map { it.toComicBook(now) })
         } else {
             mediaFlow
         }
     }
-
-    private fun Flow<ScannedFile>.toComicBookFlow(addedAt: Long): Flow<ComicBook> =
-        map { it.toComicBook(addedAt) }
 
     override suspend fun getPageCount(book: ComicBook): Int = book.pageCount
 

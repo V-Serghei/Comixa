@@ -67,6 +67,23 @@ app/
 - PR to `main` after review
 - Do not push to main directly
 
+## Sync documentation (docs/)
+
+These files define the shared contract between `comixa-android` and the future `comixa-desktop` (C#/.NET).
+**Keep them accurate — the desktop project will be built from them.**
+
+| File | What it contains | When to update |
+|------|-----------------|----------------|
+| `docs/database-model.md` | All Room tables, columns, types, constraints, migration history | Any time a Room entity, field, or DB version changes |
+| `docs/sync-model.md` | Which entities sync, JSON DTO schemas, cross-device identity strategy | Any time a synced field is added/renamed/removed, or sync transport decisions are made |
+| `docs/sync-conflicts.md` | Conflict resolution rules per entity, clock skew policy, DTO versioning | Any time a new conflict scenario is identified or a resolution strategy changes |
+
+Rules:
+- Do not document device-local fields (e.g., `filePath`) in `sync-model.md` — they are not portable.
+- All timestamps in docs and DTOs use **UTC epoch milliseconds**.
+- When adding a new entity to Room, immediately check if it belongs in `sync-model.md`.
+- When making a breaking DTO change, bump `sync_schema_version` and record it in `sync-conflicts.md`.
+
 ## Future modules (do not implement yet, just keep the interfaces clean)
 
 - `cloud/` — abstract ComicSource interface that cloud providers will implement

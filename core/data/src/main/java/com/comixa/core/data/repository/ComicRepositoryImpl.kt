@@ -29,4 +29,7 @@ class ComicRepositoryImpl @Inject constructor(
 
     override suspend fun updatePageCount(bookId: Long, pageCount: Int) =
         dao.updatePageCount(bookId, pageCount)
+
+    override fun getBySeries(seriesName: String): Flow<List<ComicBook>> =
+        dao.getBySeries(seriesName).map { list -> list.map { it.toDomain() } }
 }
