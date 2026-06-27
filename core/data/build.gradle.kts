@@ -24,6 +24,9 @@ dependencies {
     // zip4j (CBZ/ZIP)
     implementation(libs.zip4j)
 
+    // junrar (CBR/RAR)
+    implementation(libs.junrar)
+
     // Core
     implementation(libs.core.ktx)
 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.comixa.core.domain.model.ComicBook
 import com.comixa.core.domain.model.ComicFormat
 import com.comixa.core.domain.model.ReadingProgress
+import com.github.junrar.Archive
 import com.comixa.core.domain.repository.ComicRepository
 import com.comixa.core.domain.repository.ProgressRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -88,6 +89,7 @@ class ReaderViewModel @Inject constructor(
         when (book.format) {
             ComicFormat.PDF -> countPdfPages(book.filePath)
             ComicFormat.CBZ, ComicFormat.ZIP -> countZipPages(book.filePath)
+            ComicFormat.CBR -> countRarPages(book.filePath)
         }
     } catch (e: Exception) {
         0
@@ -111,6 +113,17 @@ class ReaderViewModel @Inject constructor(
         }
         return ZipFile(file).use { zip ->
             zip.fileHeaders.count { !it.isDirectory && isImageFile(it.fileName) }
+        }
+    }
+
+    private fun countRarPages(filePath: String): Int {
+        val uri = Uri.parse(filePath)
+        val file = when (uri.scheme) {
+            "file" -> File(uri.path!!)
+            else -> return 0
+        }
+        return Archive(file).use { archive ->
+            archive.fileHeaders.count { !it.isDirectory && isImageFile(it.fileName) }
         }
     }
 

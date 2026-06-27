@@ -1,6 +1,7 @@
 package com.comixa.core.data.scanner.di
 
 import com.comixa.core.data.scanner.FormatDetector
+import com.comixa.core.data.scanner.detector.CbrFormatDetector
 import com.comixa.core.data.scanner.detector.CbzFormatDetector
 import com.comixa.core.data.scanner.detector.PdfFormatDetector
 import dagger.Binds
@@ -29,7 +30,7 @@ abstract class ScannerModule {
     @IntoSet
     abstract fun bindPdfDetector(impl: PdfFormatDetector): FormatDetector
 
-    // Будущие форматы — просто раскомментировать:
-    // @Binds @IntoSet abstract fun bindCbrDetector(impl: CbrFormatDetector): FormatDetector
-    // @Binds @IntoSet abstract fun bindEpubDetector(impl: EpubFormatDetector): FormatDetector
+    @Binds
+    @IntoSet
+    abstract fun bindCbrDetector(impl: CbrFormatDetector): FormatDetector
 }

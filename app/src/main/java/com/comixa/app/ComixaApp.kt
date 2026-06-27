@@ -4,6 +4,7 @@ import android.app.Application
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import com.comixa.feature.reader.PdfPageFetcher
+import com.comixa.feature.reader.RarPageFetcher
 import com.comixa.feature.reader.ZipPageFetcher
 import dagger.hilt.android.HiltAndroidApp
 
@@ -15,6 +16,7 @@ class ComixaApp : Application(), SingletonImageLoader.Factory {
             .components {
                 add(PdfPageFetcher.Factory())
                 add(ZipPageFetcher.Factory())
+                add(RarPageFetcher.Factory())
             }
             .build()
 }
