@@ -1,29 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp" android:height="108dp"
-    android:viewportWidth="108" android:viewportHeight="108">
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
 
-    <path
-        android:fillColor="#1AFFFFFF"
-        android:pathData="M54,12 C74,12 93,23 96,40 C98,52 92,64 82,71 C72,78 63,80 54,80 C45,80 36,78 26,71 C16,64 10,52 12,40 C15,23 34,12 54,12 Z"/>
+    <!--
+        Comic-panel grid icon.
+        Layout (safe zone 20-88):
+          ┌─────────────┬────────┐
+          │     A       │   B    │  row: 24–55
+          ├──────┬──────┴────────┤
+          │  C   │      D        │  row: 59–84
+          └──────┴───────────────┘
+    -->
 
+    <!-- Panel fills -->
+    <path android:fillColor="#1A2A3A" android:pathData="M24,24 H59 V55 H24 Z"/>
+    <path android:fillColor="#111E2C" android:pathData="M63,24 H84 V55 H63 Z"/>
+    <path android:fillColor="#111E2C" android:pathData="M24,59 H43 V84 H24 Z"/>
+    <path android:fillColor="#1A2A3A" android:pathData="M47,59 H84 V84 H47 Z"/>
+
+    <!-- Panel A: bold green "C" lettermark -->
+    <!-- Arc from upper-right gap to lower-right gap, counterclockwise (large arc) -->
     <path
         android:fillColor="#00D47B"
-        android:pathData="M20,32 C20,26 26,22 34,22 L50,26 L50,78 C44,76 36,74 30,70 C24,66 20,58 20,50 Z"/>
+        android:pathData="M49.93,32.43 A11,11,0,1,0,49.93,46.57 L45.71,43.04 A5.5,5.5,0,1,0,45.71,35.96 Z"/>
 
+    <!-- Panel B: target/viewfinder circle — outer green, inner dark -->
     <path
-        android:fillColor="#00B86C"
-        android:pathData="M58,26 L74,22 C82,22 88,26 88,32 L88,50 C88,58 84,66 78,70 C72,74 64,76 58,78 Z"/>
+        android:fillColor="#00D47B"
+        android:pathData="M66.5,39.5 A7,7,0,1,1,80.5,39.5 A7,7,0,1,1,66.5,39.5 Z"/>
+    <path
+        android:fillColor="#111E2C"
+        android:pathData="M70.5,39.5 A3,3,0,1,1,76.5,39.5 A3,3,0,1,1,70.5,39.5 Z"/>
 
+    <!-- Panel C: lightning bolt -->
     <path
-        android:fillColor="#9BFFD9"
-        android:pathData="M50,26 L58,26 L58,78 L50,78 Z"/>
+        android:fillColor="#00D47B"
+        android:pathData="M36,60 L29,71 L33,71 L27,83 L34,72 L30,72 Z"/>
 
+    <!-- Panel D: three diagonal speed lines (upper-left to lower-right) -->
     <path
-        android:fillColor="#7DD3FC"
-        android:pathData="M30,70 C28,78 32,86 40,88 C38,84 38,80 40,76 C36,76 33,74 30,70 Z"/>
+        android:fillColor="#00000000"
+        android:strokeColor="#00D47B"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M52,83 L67,60 M61,83 L76,60 M70,83 L82,64"/>
+
+    <!-- White panel borders on top of all content -->
+    <!-- Outer frame as 4dp ring via even-odd fill -->
     <path
-        android:fillColor="#A78BFA"
-        android:pathData="M78,70 C76,78 72,86 64,88 C66,84 66,80 64,76 C68,76 72,74 78,70 Z"/>
+        android:fillColor="#FFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M20,20 H88 V88 H20 Z M24,24 H84 V84 H24 Z"/>
+    <!-- Horizontal divider between rows -->
+    <path android:fillColor="#FFFFFF" android:pathData="M24,55 H84 V59 H24 Z"/>
+    <!-- Vertical divider in top row (between A and B) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M59,24 H63 V55 H59 Z"/>
+    <!-- Vertical divider in bottom row (between C and D) -->
+    <path android:fillColor="#FFFFFF" android:pathData="M43,59 H47 V84 H43 Z"/>
 
 </vector>

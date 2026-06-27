@@ -18,7 +18,7 @@ dependencies {
     // Coroutines
     implementation(libs.coroutines.android)
 
-    // WorkManager (фоновое сканирование)
+    // WorkManager (background scanning)
     implementation(libs.work.runtime)
 
     // zip4j (CBZ/ZIP)

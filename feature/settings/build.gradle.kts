@@ -23,6 +23,6 @@ dependencies {
     implementation(libs.hilt.navigation)
     implementation(libs.navigation.compose)
 
-    // DataStore для настроек
+    // DataStore for user preferences
     implementation(libs.datastore.preferences)
 }
