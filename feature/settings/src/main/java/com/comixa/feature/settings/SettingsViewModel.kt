@@ -1,20 +1,35 @@
 package com.comixa.feature.settings
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.comixa.core.domain.model.ReadingDirection
+import com.comixa.core.domain.model.UserPreferences
+import com.comixa.core.domain.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class SettingsUiState(
-    val readingDirection: ReadingDirection = ReadingDirection.LEFT_TO_RIGHT,
-)
-
 @HiltViewModel
-class SettingsViewModel @Inject constructor() : ViewModel() {
+class SettingsViewModel @Inject constructor(
+    private val prefsRepository: UserPreferencesRepository,
+) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SettingsUiState())
-    val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<UserPreferences> = prefsRepository.get()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = UserPreferences(),
+        )
+
+    fun setDarkTheme(dark: Boolean) {
+        viewModelScope.launch { prefsRepository.setDarkTheme(dark) }
+    }
+
+    fun setReadingDirection(direction: ReadingDirection) {
+        viewModelScope.launch { prefsRepository.setReadingDirection(direction) }
+    }
 }

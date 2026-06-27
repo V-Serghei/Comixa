@@ -37,7 +37,7 @@ class FileScanner @Inject constructor(
         val resolver = context.contentResolver
         val rootDocId = DocumentsContract.getTreeDocumentId(rootUri)
 
-        // BFS очередь — содержит document IDs папок для обхода
+        // BFS queue of document IDs for folders to visit
         val queue = ArrayDeque<String>()
         queue.add(rootDocId)
 

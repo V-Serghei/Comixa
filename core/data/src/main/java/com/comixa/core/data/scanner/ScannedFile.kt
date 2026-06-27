@@ -10,10 +10,15 @@ data class ScannedFile(
     val format: ComicFormat,
     val sizeBytes: Long = 0L,
 ) {
-    fun toComicBook(addedAt: Long): ComicBook = ComicBook(
-        title = fileName.substringBeforeLast('.'),
-        filePath = uri.toString(),
-        format = format,
-        addedAt = addedAt,
-    )
+    fun toComicBook(addedAt: Long): ComicBook {
+        val parsed = ComicTitleParser.parse(fileName)
+        return ComicBook(
+            title = parsed.displayTitle,
+            seriesName = parsed.seriesName,
+            issueNumber = parsed.issueNumber,
+            filePath = uri.toString(),
+            format = format,
+            addedAt = addedAt,
+        )
+    }
 }

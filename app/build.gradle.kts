@@ -26,9 +26,13 @@ dependencies {
     implementation(composeBom)
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
+    implementation(libs.androidx.material.icons.core)
     implementation(libs.activity.compose)
     implementation(libs.navigation.compose)
     implementation(libs.hilt.navigation)
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
+    implementation(libs.coil.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.lifecycle.runtime.compose)
 }

@@ -14,6 +14,9 @@ interface ProgressDao {
     @Upsert
     suspend fun upsert(entity: ReadingProgressEntity)
 
+    @Query("SELECT * FROM reading_progress")
+    fun getAll(): Flow<List<ReadingProgressEntity>>
+
     @Query("SELECT * FROM reading_progress ORDER BY lastReadAt DESC LIMIT :limit")
     fun getRecentlyRead(limit: Int): Flow<List<ReadingProgressEntity>>
 }

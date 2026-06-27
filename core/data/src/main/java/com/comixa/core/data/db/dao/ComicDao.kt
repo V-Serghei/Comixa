@@ -27,4 +27,7 @@ interface ComicDao {
 
     @Query("UPDATE comic_books SET pageCount = :count WHERE id = :id")
     suspend fun updatePageCount(id: Long, count: Int)
+
+    @Query("SELECT * FROM comic_books WHERE seriesName = :seriesName ORDER BY issueNumber ASC, title ASC")
+    fun getBySeries(seriesName: String): Flow<List<ComicBookEntity>>
 }

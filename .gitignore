@@ -33,6 +33,9 @@ output-metadata.json
 # Kotlin incremental compilation cache
 .kotlin/
 
+# IDE compiled output (IntelliJ/Android Studio bin/ mirror)
+bin/
+
 # ProGuard mapping output (keep rules in VCS, not outputs)
 proguard/
 

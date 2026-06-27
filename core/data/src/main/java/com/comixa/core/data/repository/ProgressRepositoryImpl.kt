@@ -18,6 +18,9 @@ class ProgressRepositoryImpl @Inject constructor(
     override suspend fun save(progress: ReadingProgress) =
         dao.upsert(ReadingProgressEntity.fromDomain(progress))
 
+    override fun getAll(): Flow<List<ReadingProgress>> =
+        dao.getAll().map { list -> list.map { it.toDomain() } }
+
     override fun getRecentlyRead(limit: Int): Flow<List<ReadingProgress>> =
         dao.getRecentlyRead(limit).map { list -> list.map { it.toDomain() } }
 }
