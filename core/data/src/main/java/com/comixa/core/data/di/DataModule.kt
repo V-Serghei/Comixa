@@ -6,11 +6,13 @@ import com.comixa.core.data.db.ComixaDatabase
 import com.comixa.core.data.repository.BookmarkRepositoryImpl
 import com.comixa.core.data.repository.ComicRepositoryImpl
 import com.comixa.core.data.repository.ProgressRepositoryImpl
+import com.comixa.core.data.repository.ShelfRepositoryImpl
 import com.comixa.core.data.repository.WatchedFolderRepositoryImpl
 import com.comixa.core.data.source.LocalFolderSource
 import com.comixa.core.domain.repository.BookmarkRepository
 import com.comixa.core.domain.repository.ComicRepository
 import com.comixa.core.domain.repository.ProgressRepository
+import com.comixa.core.domain.repository.ShelfRepository
 import com.comixa.core.domain.repository.WatchedFolderRepository
 import com.comixa.core.domain.source.ComicSource
 import com.comixa.core.domain.usecase.ScanLibraryUseCase
@@ -30,7 +32,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): ComixaDatabase =
         Room.databaseBuilder(context, ComixaDatabase::class.java, "comixa.db")
-            .addMigrations(ComixaDatabase.MIGRATION_3_4)
+            .addMigrations(ComixaDatabase.MIGRATION_3_4, ComixaDatabase.MIGRATION_4_5, ComixaDatabase.MIGRATION_5_6)
             .fallbackToDestructiveMigration()
             .build()
 
@@ -38,6 +40,7 @@ object DatabaseModule {
     @Provides fun provideBookmarkDao(db: ComixaDatabase) = db.bookmarkDao()
     @Provides fun provideProgressDao(db: ComixaDatabase) = db.progressDao()
     @Provides fun provideWatchedFolderDao(db: ComixaDatabase) = db.watchedFolderDao()
+    @Provides fun provideShelfDao(db: ComixaDatabase) = db.shelfDao()
 }
 
 @Module
@@ -58,6 +61,9 @@ abstract class RepositoryModule {
 
     @Binds @Singleton
     abstract fun bindWatchedFolderRepository(impl: WatchedFolderRepositoryImpl): WatchedFolderRepository
+
+    @Binds @Singleton
+    abstract fun bindShelfRepository(impl: ShelfRepositoryImpl): ShelfRepository
 }
 
 @Module

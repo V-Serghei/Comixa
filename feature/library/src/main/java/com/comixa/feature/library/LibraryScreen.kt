@@ -35,13 +35,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.Badge
@@ -86,6 +90,7 @@ import coil3.compose.AsyncImage
 import com.comixa.core.domain.model.ComicBook
 import com.comixa.core.domain.model.ComicFormat
 import com.comixa.core.domain.model.ComicPageKey
+import com.comixa.core.domain.model.ReadingStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -240,11 +245,17 @@ fun LibraryScreen(
                     .padding(horizontal = 12.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                FilterChip(
-                    selected = state.filter.showUnreadOnly,
-                    onClick = { viewModel.toggleUnreadOnly() },
-                    label = { Text("Unread") },
-                )
+                ReadingStatus.entries.forEach { status ->
+                    FilterChip(
+                        selected = state.filter.statusFilter == status,
+                        onClick = {
+                            viewModel.setStatusFilter(
+                                if (state.filter.statusFilter == status) null else status,
+                            )
+                        },
+                        label = { Text(status.label) },
+                    )
+                }
                 ComicFormat.entries.forEach { format ->
                     FilterChip(
                         selected = state.filter.formatFilter == format,
@@ -260,7 +271,7 @@ fun LibraryScreen(
 
             when {
                 state.items.isEmpty() && !state.isScanning && state.filter.searchQuery.isBlank()
-                    && state.filter.formatFilter == null && !state.filter.showUnreadOnly -> {
+                    && state.filter.formatFilter == null && state.filter.statusFilter == null -> {
                     EmptyLibrary()
                 }
                 state.items.isEmpty() && !state.isScanning -> {
@@ -338,17 +349,37 @@ private fun EmptyLibrary() {
 }
 
 @Composable
-private fun BookCard(item: BookWithProgress, onClick: () -> Unit) {
+internal fun BookCard(item: BookWithProgress, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
     ) {
         Column {
-            AsyncImage(
-                model = ComicPageKey(filePath = item.book.filePath, pageIndex = 0, format = item.book.format),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f),
-            )
+            Box(modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f)) {
+                AsyncImage(
+                    model = ComicPageKey(filePath = item.book.filePath, pageIndex = 0, format = item.book.format),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+                val status = item.progress?.status
+                if (status == ReadingStatus.COMPLETED || status == ReadingStatus.IN_PROGRESS) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(4.dp)
+                            .size(22.dp)
+                            .background(Color.Black.copy(alpha = 0.55f), CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = if (status == ReadingStatus.COMPLETED) Icons.Default.CheckCircle else Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            tint = if (status == ReadingStatus.COMPLETED) Color(0xFF66BB6A) else Color.White,
+                            modifier = Modifier.size(14.dp),
+                        )
+                    }
+                }
+            }
             val progress = item.progress
             if (progress != null && progress.totalPages > 0) {
                 LinearProgressIndicator(
@@ -378,7 +409,7 @@ private fun BookCard(item: BookWithProgress, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SeriesCard(series: LibraryItem.Series, onClick: () -> Unit) {
+internal fun SeriesCard(series: LibraryItem.Series, onClick: () -> Unit) {
     val cover = series.cover
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
@@ -493,4 +524,11 @@ private val SortOrder.label: String
         SortOrder.TITLE_DESC -> "Title Z → A"
         SortOrder.RECENTLY_ADDED -> "Recently added"
         SortOrder.RECENTLY_READ -> "Recently read"
+    }
+
+private val ReadingStatus.label: String
+    get() = when (this) {
+        ReadingStatus.UNREAD -> "Unread"
+        ReadingStatus.IN_PROGRESS -> "In progress"
+        ReadingStatus.COMPLETED -> "Completed"
     }
