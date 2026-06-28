@@ -9,24 +9,38 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.RemoveCircleOutline
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -47,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.comixa.core.domain.model.ReadingDirection
+import com.comixa.core.domain.model.ReadingStatus
 
 @Composable
 fun ReaderScreen(
@@ -75,6 +90,9 @@ fun ReaderScreen(
                     VerticalPageViewer(
                         state = state,
                         onPageVisible = viewModel::onPageSettled,
+                        onMarkCompleted = viewModel::markAsCompleted,
+                        onMarkUnread = viewModel::markAsUnread,
+                        onAddBookmark = viewModel::addBookmarkAtPage,
                         onBack = onBack,
                     )
                 } else {
@@ -82,6 +100,9 @@ fun ReaderScreen(
                         state = state,
                         direction = direction,
                         onPageSettled = viewModel::onPageSettled,
+                        onMarkCompleted = viewModel::markAsCompleted,
+                        onMarkUnread = viewModel::markAsUnread,
+                        onAddBookmark = viewModel::addBookmarkAtPage,
                         onBack = onBack,
                     )
                 }
@@ -103,6 +124,9 @@ private fun HorizontalPageViewer(
     state: ReaderUiState,
     direction: ReadingDirection,
     onPageSettled: (Int) -> Unit,
+    onMarkCompleted: () -> Unit,
+    onMarkUnread: () -> Unit,
+    onAddBookmark: (Int) -> Unit,
     onBack: () -> Unit,
 ) {
     val book = state.book!!
@@ -115,7 +139,7 @@ private fun HorizontalPageViewer(
         snapshotFlow { pagerState.settledPage }.collect { onPageSettled(it) }
     }
 
-    var barsVisible by remember { mutableStateOf(true) }
+    var overlayVisible by remember { mutableStateOf(false) }
     var isCurrentPageZoomed by remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState.currentPage) { isCurrentPageZoomed = false }
@@ -129,7 +153,7 @@ private fun HorizontalPageViewer(
         ) { page ->
             ZoomablePage(
                 key = ComicPageKey(book.filePath, page, book.format),
-                onTap = { barsVisible = !barsVisible },
+                onTap = { overlayVisible = !overlayVisible },
                 onZoomChanged = { zoomed ->
                     if (page == pagerState.currentPage) isCurrentPageZoomed = zoomed
                 },
@@ -137,7 +161,7 @@ private fun HorizontalPageViewer(
         }
 
         AnimatedVisibility(
-            visible = barsVisible,
+            visible = overlayVisible,
             enter = fadeIn() + slideInVertically { -it },
             exit = fadeOut() + slideOutVertically { -it },
             modifier = Modifier.align(Alignment.TopCenter),
@@ -171,6 +195,24 @@ private fun HorizontalPageViewer(
             )
         }
     }
+
+    if (overlayVisible) {
+        ReaderActionsSheet(
+            currentPage = pagerState.currentPage,
+            totalPages = state.pageCount,
+            readingStatus = state.readingStatus,
+            onMarkCompleted = {
+                onMarkCompleted()
+                overlayVisible = false
+            },
+            onMarkUnread = {
+                onMarkUnread()
+                overlayVisible = false
+            },
+            onAddBookmark = { onAddBookmark(pagerState.currentPage) },
+            onDismiss = { overlayVisible = false },
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -178,11 +220,14 @@ private fun HorizontalPageViewer(
 private fun VerticalPageViewer(
     state: ReaderUiState,
     onPageVisible: (Int) -> Unit,
+    onMarkCompleted: () -> Unit,
+    onMarkUnread: () -> Unit,
+    onAddBookmark: (Int) -> Unit,
     onBack: () -> Unit,
 ) {
     val book = state.book!!
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = state.currentPage)
-    var barsVisible by remember { mutableStateOf(true) }
+    var overlayVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }.collect { onPageVisible(it) }
@@ -194,7 +239,7 @@ private fun VerticalPageViewer(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
-                    detectTapGestures { barsVisible = !barsVisible }
+                    detectTapGestures { overlayVisible = !overlayVisible }
                 },
         ) {
             items(state.pageCount) { page ->
@@ -208,7 +253,7 @@ private fun VerticalPageViewer(
         }
 
         AnimatedVisibility(
-            visible = barsVisible,
+            visible = overlayVisible,
             enter = fadeIn() + slideInVertically { -it },
             exit = fadeOut() + slideOutVertically { -it },
             modifier = Modifier.align(Alignment.TopCenter),
@@ -240,6 +285,113 @@ private fun VerticalPageViewer(
                     navigationIconContentColor = Color.White,
                 ),
             )
+        }
+    }
+
+    if (overlayVisible) {
+        ReaderActionsSheet(
+            currentPage = listState.firstVisibleItemIndex,
+            totalPages = state.pageCount,
+            readingStatus = state.readingStatus,
+            onMarkCompleted = {
+                onMarkCompleted()
+                overlayVisible = false
+            },
+            onMarkUnread = {
+                onMarkUnread()
+                overlayVisible = false
+            },
+            onAddBookmark = { onAddBookmark(listState.firstVisibleItemIndex) },
+            onDismiss = { overlayVisible = false },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ReaderActionsSheet(
+    currentPage: Int,
+    totalPages: Int,
+    readingStatus: ReadingStatus,
+    onMarkCompleted: () -> Unit,
+    onMarkUnread: () -> Unit,
+    onAddBookmark: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartialExpansion = true)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = Color.Black.copy(alpha = 0.85f),
+        contentColor = Color.White,
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)) {
+            Text(
+                text = "Page ${currentPage + 1} of $totalPages",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+            )
+            Text(
+                text = when (readingStatus) {
+                    ReadingStatus.UNREAD -> "Unread"
+                    ReadingStatus.IN_PROGRESS -> "In progress"
+                    ReadingStatus.COMPLETED -> "Completed"
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.6f),
+            )
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
+            Spacer(Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (readingStatus != ReadingStatus.COMPLETED) {
+                    ActionButton(
+                        icon = { Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(22.dp)) },
+                        label = "Mark as read",
+                        onClick = onMarkCompleted,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                if (readingStatus != ReadingStatus.UNREAD) {
+                    ActionButton(
+                        icon = { Icon(Icons.Default.RemoveCircleOutline, contentDescription = null, modifier = Modifier.size(22.dp)) },
+                        label = "Mark as unread",
+                        onClick = onMarkUnread,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                ActionButton(
+                    icon = { Icon(Icons.Default.Bookmark, contentDescription = null, modifier = Modifier.size(22.dp)) },
+                    label = "Bookmark",
+                    onClick = {
+                        onAddBookmark()
+                        onDismiss()
+                    },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun ActionButton(
+    icon: @Composable () -> Unit,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TextButton(onClick = onClick, modifier = modifier) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            icon()
+            Spacer(Modifier.height(4.dp))
+            Text(label, style = MaterialTheme.typography.labelSmall, color = Color.White)
         }
     }
 }

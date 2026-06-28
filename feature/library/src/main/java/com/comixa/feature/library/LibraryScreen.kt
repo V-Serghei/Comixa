@@ -86,6 +86,7 @@ import coil3.compose.AsyncImage
 import com.comixa.core.domain.model.ComicBook
 import com.comixa.core.domain.model.ComicFormat
 import com.comixa.core.domain.model.ComicPageKey
+import com.comixa.core.domain.model.ReadingStatus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -240,11 +241,17 @@ fun LibraryScreen(
                     .padding(horizontal = 12.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                FilterChip(
-                    selected = state.filter.showUnreadOnly,
-                    onClick = { viewModel.toggleUnreadOnly() },
-                    label = { Text("Unread") },
-                )
+                ReadingStatus.entries.forEach { status ->
+                    FilterChip(
+                        selected = state.filter.statusFilter == status,
+                        onClick = {
+                            viewModel.setStatusFilter(
+                                if (state.filter.statusFilter == status) null else status,
+                            )
+                        },
+                        label = { Text(status.label) },
+                    )
+                }
                 ComicFormat.entries.forEach { format ->
                     FilterChip(
                         selected = state.filter.formatFilter == format,
@@ -260,7 +267,7 @@ fun LibraryScreen(
 
             when {
                 state.items.isEmpty() && !state.isScanning && state.filter.searchQuery.isBlank()
-                    && state.filter.formatFilter == null && !state.filter.showUnreadOnly -> {
+                    && state.filter.formatFilter == null && state.filter.statusFilter == null -> {
                     EmptyLibrary()
                 }
                 state.items.isEmpty() && !state.isScanning -> {
@@ -493,4 +500,11 @@ private val SortOrder.label: String
         SortOrder.TITLE_DESC -> "Title Z → A"
         SortOrder.RECENTLY_ADDED -> "Recently added"
         SortOrder.RECENTLY_READ -> "Recently read"
+    }
+
+private val ReadingStatus.label: String
+    get() = when (this) {
+        ReadingStatus.UNREAD -> "Unread"
+        ReadingStatus.IN_PROGRESS -> "In progress"
+        ReadingStatus.COMPLETED -> "Completed"
     }

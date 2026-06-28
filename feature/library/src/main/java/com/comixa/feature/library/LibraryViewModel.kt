@@ -7,6 +7,7 @@ import com.comixa.core.data.source.LocalFolderSource
 import com.comixa.core.domain.model.ComicBook
 import com.comixa.core.domain.model.ComicFormat
 import com.comixa.core.domain.model.ReadingProgress
+import com.comixa.core.domain.model.ReadingStatus
 import com.comixa.core.domain.repository.ComicRepository
 import com.comixa.core.domain.repository.ProgressRepository
 import com.comixa.core.domain.repository.WatchedFolderRepository
@@ -46,7 +47,7 @@ enum class SortOrder {
 data class LibraryFilterState(
     val searchQuery: String = "",
     val sortOrder: SortOrder = SortOrder.TITLE_ASC,
-    val showUnreadOnly: Boolean = false,
+    val statusFilter: ReadingStatus? = null,
     val formatFilter: ComicFormat? = null,
 )
 
@@ -113,7 +114,7 @@ class LibraryViewModel @Inject constructor(
 
     fun setSearchQuery(query: String) = _filter.update { it.copy(searchQuery = query) }
     fun setSortOrder(order: SortOrder) = _filter.update { it.copy(sortOrder = order) }
-    fun toggleUnreadOnly() = _filter.update { it.copy(showUnreadOnly = !it.showUnreadOnly) }
+    fun setStatusFilter(status: ReadingStatus?) = _filter.update { it.copy(statusFilter = status) }
     fun setFormatFilter(format: ComicFormat?) = _filter.update { it.copy(formatFilter = format) }
 
     private fun groupIntoLibraryItems(books: List<BookWithProgress>): List<LibraryItem> {
@@ -144,11 +145,11 @@ class LibraryViewModel @Inject constructor(
             }
         }
 
-        if (filter.showUnreadOnly) {
+        filter.statusFilter?.let { filterStatus ->
             result = result.filter { item ->
                 when (item) {
-                    is LibraryItem.Single -> item.item.progress == null
-                    is LibraryItem.Series -> item.books.any { it.progress == null }
+                    is LibraryItem.Single -> item.item.matchesStatus(filterStatus)
+                    is LibraryItem.Series -> item.books.any { it.matchesStatus(filterStatus) }
                 }
             }
         }
@@ -187,4 +188,10 @@ class LibraryViewModel @Inject constructor(
             is LibraryItem.Single -> item.progress?.lastReadAt ?: 0L
             is LibraryItem.Series -> books.maxOfOrNull { it.progress?.lastReadAt ?: 0L } ?: 0L
         }
+}
+
+private fun BookWithProgress.matchesStatus(status: ReadingStatus): Boolean = when (status) {
+    ReadingStatus.UNREAD -> progress == null || progress.status == ReadingStatus.UNREAD
+    ReadingStatus.IN_PROGRESS -> progress?.status == ReadingStatus.IN_PROGRESS
+    ReadingStatus.COMPLETED -> progress?.status == ReadingStatus.COMPLETED
 }

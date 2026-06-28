@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.comixa.core.domain.model.ReadingProgress
+import com.comixa.core.domain.model.ReadingStatus
 
 @Entity(
     tableName = "reading_progress",
@@ -21,11 +22,23 @@ data class ReadingProgressEntity(
     val currentPage: Int,
     val totalPages: Int,
     val lastReadAt: Long = 0L,
+    val status: String = ReadingStatus.UNREAD.name,
 ) {
-    fun toDomain() = ReadingProgress(bookId, currentPage, totalPages, lastReadAt)
+    fun toDomain() = ReadingProgress(
+        bookId = bookId,
+        currentPage = currentPage,
+        totalPages = totalPages,
+        lastReadAt = lastReadAt,
+        status = ReadingStatus.valueOf(status),
+    )
 
     companion object {
-        fun fromDomain(p: ReadingProgress) =
-            ReadingProgressEntity(p.bookId, p.currentPage, p.totalPages, p.lastReadAt)
+        fun fromDomain(p: ReadingProgress) = ReadingProgressEntity(
+            bookId = p.bookId,
+            currentPage = p.currentPage,
+            totalPages = p.totalPages,
+            lastReadAt = p.lastReadAt,
+            status = p.status.name,
+        )
     }
 }

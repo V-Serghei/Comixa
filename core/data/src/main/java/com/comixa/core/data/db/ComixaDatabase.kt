@@ -25,7 +25,7 @@ import com.comixa.core.data.db.entity.WatchedFolderEntity
         ShelfEntity::class,
         ShelfEntryEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
 )
 abstract class ComixaDatabase : RoomDatabase() {
@@ -52,6 +52,12 @@ abstract class ComixaDatabase : RoomDatabase() {
                     "CREATE TABLE IF NOT EXISTS shelf_entries (shelfId INTEGER NOT NULL, bookId INTEGER NOT NULL, PRIMARY KEY(shelfId, bookId), FOREIGN KEY(shelfId) REFERENCES shelves(id) ON DELETE CASCADE, FOREIGN KEY(bookId) REFERENCES comic_books(id) ON DELETE CASCADE)"
                 )
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_shelf_entries_bookId ON shelf_entries(bookId)")
+            }
+        }
+
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE reading_progress ADD COLUMN status TEXT NOT NULL DEFAULT 'UNREAD'")
             }
         }
     }

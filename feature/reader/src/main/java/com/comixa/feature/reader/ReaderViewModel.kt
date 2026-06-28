@@ -7,10 +7,13 @@ import android.os.ParcelFileDescriptor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.comixa.core.domain.model.Bookmark
 import com.comixa.core.domain.model.ComicBook
 import com.comixa.core.domain.model.ComicFormat
 import com.comixa.core.domain.model.ReadingDirection
 import com.comixa.core.domain.model.ReadingProgress
+import com.comixa.core.domain.model.ReadingStatus
+import com.comixa.core.domain.repository.BookmarkRepository
 import com.comixa.core.domain.repository.ComicRepository
 import com.comixa.core.domain.repository.ProgressRepository
 import com.comixa.core.domain.repository.UserPreferencesRepository
@@ -34,6 +37,7 @@ data class ReaderUiState(
     val book: ComicBook? = null,
     val pageCount: Int = 0,
     val currentPage: Int = 0,
+    val readingStatus: ReadingStatus = ReadingStatus.UNREAD,
     val isLoading: Boolean = true,
     val error: String? = null,
 )
@@ -44,6 +48,7 @@ class ReaderViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val comicRepository: ComicRepository,
     private val progressRepository: ProgressRepository,
+    private val bookmarkRepository: BookmarkRepository,
     prefsRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
@@ -73,6 +78,7 @@ class ReaderViewModel @Inject constructor(
                     book = book,
                     pageCount = pageCount,
                     currentPage = progress?.currentPage ?: 0,
+                    readingStatus = progress?.status ?: ReadingStatus.UNREAD,
                     isLoading = false,
                 )
             }
@@ -82,7 +88,14 @@ class ReaderViewModel @Inject constructor(
     fun onPageSettled(page: Int) {
         val pageCount = _uiState.value.pageCount
         if (pageCount == 0) return
-        _uiState.update { it.copy(currentPage = page) }
+        // Don't record progress for page 0 — the book stays UNREAD until the user moves past the first page
+        if (page == 0 && _uiState.value.readingStatus == ReadingStatus.UNREAD) return
+        val newStatus = when {
+            _uiState.value.readingStatus == ReadingStatus.COMPLETED -> ReadingStatus.COMPLETED
+            page >= pageCount - 1 -> ReadingStatus.COMPLETED
+            else -> ReadingStatus.IN_PROGRESS
+        }
+        _uiState.update { it.copy(currentPage = page, readingStatus = newStatus) }
         viewModelScope.launch {
             progressRepository.save(
                 ReadingProgress(
@@ -90,6 +103,41 @@ class ReaderViewModel @Inject constructor(
                     currentPage = page,
                     totalPages = pageCount,
                     lastReadAt = System.currentTimeMillis(),
+                    status = newStatus,
+                )
+            )
+        }
+    }
+
+    fun markAsCompleted() {
+        val pageCount = _uiState.value.pageCount
+        if (pageCount == 0) return
+        _uiState.update { it.copy(readingStatus = ReadingStatus.COMPLETED) }
+        viewModelScope.launch {
+            progressRepository.save(
+                ReadingProgress(
+                    bookId = bookId,
+                    currentPage = pageCount - 1,
+                    totalPages = pageCount,
+                    lastReadAt = System.currentTimeMillis(),
+                    status = ReadingStatus.COMPLETED,
+                )
+            )
+        }
+    }
+
+    fun markAsUnread() {
+        _uiState.update { it.copy(readingStatus = ReadingStatus.UNREAD, currentPage = 0) }
+        viewModelScope.launch { progressRepository.delete(bookId) }
+    }
+
+    fun addBookmarkAtPage(page: Int) {
+        viewModelScope.launch {
+            bookmarkRepository.add(
+                Bookmark(
+                    bookId = bookId,
+                    pageIndex = page,
+                    createdAt = System.currentTimeMillis(),
                 )
             )
         }

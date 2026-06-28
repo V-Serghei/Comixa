@@ -114,7 +114,7 @@ Many-to-many join between shelves and books. Device-local only — not synced.
 ## Room Database
 
 - **Class:** `ComixaDatabase`
-- **Version:** 5
+- **Version:** 6
 - **Schema export:** enabled (`schemas/` directory)
 - **Entities:** `ComicBookEntity`, `ReadingProgressEntity`, `BookmarkEntity`, `WatchedFolderEntity`, `ShelfEntity`, `ShelfEntryEntity`
 
@@ -128,6 +128,7 @@ Many-to-many join between shelves and books. Device-local only — not synced.
 | 2 → 3     | Added `watched_folders` table                                 |
 | 3 → 4     | Added `seriesName`, `issueNumber` columns to `comic_books`    |
 | 4 → 5     | Added `shelves` and `shelf_entries` tables                    |
+| 5 → 6     | Added `status` column to `reading_progress` (default: UNREAD) |
 
 ---
 

@@ -32,7 +32,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): ComixaDatabase =
         Room.databaseBuilder(context, ComixaDatabase::class.java, "comixa.db")
-            .addMigrations(ComixaDatabase.MIGRATION_3_4, ComixaDatabase.MIGRATION_4_5)
+            .addMigrations(ComixaDatabase.MIGRATION_3_4, ComixaDatabase.MIGRATION_4_5, ComixaDatabase.MIGRATION_5_6)
             .fallbackToDestructiveMigration()
             .build()
 

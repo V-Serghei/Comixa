@@ -3,6 +3,7 @@ package com.comixa.core.data.repository
 import com.comixa.core.data.db.dao.ProgressDao
 import com.comixa.core.data.db.entity.ReadingProgressEntity
 import com.comixa.core.domain.model.ReadingProgress
+import com.comixa.core.domain.model.ReadingStatus
 import com.comixa.core.domain.repository.ProgressRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,6 +18,12 @@ class ProgressRepositoryImpl @Inject constructor(
 
     override suspend fun save(progress: ReadingProgress) =
         dao.upsert(ReadingProgressEntity.fromDomain(progress))
+
+    override suspend fun setStatus(bookId: Long, status: ReadingStatus) =
+        dao.updateStatus(bookId, status.name)
+
+    override suspend fun delete(bookId: Long) =
+        dao.delete(bookId)
 
     override fun getAll(): Flow<List<ReadingProgress>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }

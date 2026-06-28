@@ -5,10 +5,11 @@ data class ReadingProgress(
     val currentPage: Int,
     val totalPages: Int,
     val lastReadAt: Long = 0L,
+    val status: ReadingStatus = ReadingStatus.UNREAD,
 ) {
     val percentComplete: Float
         get() = if (totalPages > 0) currentPage.toFloat() / totalPages else 0f
 
     val isCompleted: Boolean
-        get() = totalPages > 0 && currentPage >= totalPages - 1
+        get() = status == ReadingStatus.COMPLETED
 }
