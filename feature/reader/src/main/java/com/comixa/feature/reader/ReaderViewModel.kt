@@ -38,6 +38,7 @@ data class ReaderUiState(
     val pageCount: Int = 0,
     val currentPage: Int = 0,
     val readingStatus: ReadingStatus = ReadingStatus.UNREAD,
+    val bookmarks: List<Bookmark> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null,
 )
@@ -62,6 +63,11 @@ class ReaderViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ReadingDirection.LEFT_TO_RIGHT)
 
     init {
+        viewModelScope.launch {
+            bookmarkRepository.getForBook(bookId).collect { bookmarks ->
+                _uiState.update { it.copy(bookmarks = bookmarks) }
+            }
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val book = comicRepository.getById(bookId)
             if (book == null) {
