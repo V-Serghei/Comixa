@@ -318,7 +318,7 @@ private fun ReaderActionsSheet(
     onAddBookmark: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartialExpansion = true)
+    val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,

@@ -137,7 +137,7 @@ private fun AddBooksSheet(
     onAdd: (Long) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartialExpansion = false)
+    val sheetState = rememberModalBottomSheetState()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
