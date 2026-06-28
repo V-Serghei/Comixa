@@ -116,16 +116,23 @@ private fun HorizontalPageViewer(
     }
 
     var barsVisible by remember { mutableStateOf(true) }
+    var isCurrentPageZoomed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(pagerState.currentPage) { isCurrentPageZoomed = false }
 
     Box(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(
             state = pagerState,
             reverseLayout = direction == ReadingDirection.RIGHT_TO_LEFT,
+            userScrollEnabled = !isCurrentPageZoomed,
             modifier = Modifier.fillMaxSize(),
         ) { page ->
             ZoomablePage(
                 key = ComicPageKey(book.filePath, page, book.format),
                 onTap = { barsVisible = !barsVisible },
+                onZoomChanged = { zoomed ->
+                    if (page == pagerState.currentPage) isCurrentPageZoomed = zoomed
+                },
             )
         }
 
@@ -241,24 +248,30 @@ private fun VerticalPageViewer(
 private fun ZoomablePage(
     key: ComicPageKey,
     onTap: () -> Unit,
+    onZoomChanged: (Boolean) -> Unit = {},
 ) {
     var scale by remember(key.pageIndex) { mutableFloatStateOf(1f) }
     var offset by remember(key.pageIndex) { mutableStateOf(Offset.Zero) }
 
     val transformState = rememberTransformableState { zoomChange, panChange, _ ->
-        scale = (scale * zoomChange).coerceIn(1f, 6f)
-        offset = if (scale > 1f) offset + panChange else Offset.Zero
+        val newScale = (scale * zoomChange).coerceIn(1f, 6f)
+        scale = newScale
+        offset = if (newScale > 1f) offset + panChange else Offset.Zero
+        onZoomChanged(newScale > 1f)
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            // transformable first: inner modifier gets multi-touch events before detectTapGestures
+            .transformable(state = transformState)
             .pointerInput(key.pageIndex) {
                 detectTapGestures(
                     onTap = { onTap() },
                     onDoubleTap = {
                         scale = 1f
                         offset = Offset.Zero
+                        onZoomChanged(false)
                     },
                 )
             },
@@ -275,8 +288,7 @@ private fun ZoomablePage(
                     scaleY = scale
                     translationX = offset.x
                     translationY = offset.y
-                }
-                .transformable(state = transformState),
+                },
         )
     }
 }

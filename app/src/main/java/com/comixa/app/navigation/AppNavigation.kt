@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,7 +34,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.comixa.feature.library.FolderPickerScreen
 import com.comixa.feature.library.LibraryScreen
+import com.comixa.feature.library.SeriesListScreen
 import com.comixa.feature.library.SeriesScreen
+import com.comixa.feature.library.ShelfDetailScreen
+import com.comixa.feature.library.ShelvesScreen
 import com.comixa.feature.reader.ReaderScreen
 import com.comixa.feature.settings.SettingsScreen
 import kotlinx.coroutines.launch
@@ -42,6 +47,9 @@ private const val ROUTE_READER        = "reader/{bookId}"
 private const val ROUTE_SETTINGS      = "settings"
 private const val ROUTE_FOLDER_PICKER = "folder_picker"
 private const val ROUTE_SERIES        = "series/{seriesName}"
+private const val ROUTE_SERIES_LIST   = "series_list"
+private const val ROUTE_SHELVES       = "shelves"
+private const val ROUTE_SHELF_DETAIL  = "shelf/{shelfId}"
 
 @Composable
 fun AppNavigation(
@@ -81,6 +89,32 @@ fun AppNavigation(
                         scope.launch { drawerState.close() }
                         navController.navigate(ROUTE_LIBRARY) {
                             popUpTo(ROUTE_LIBRARY) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.AutoStories, contentDescription = null) },
+                    label = { Text("Series") },
+                    selected = currentRoute == ROUTE_SERIES_LIST,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(ROUTE_SERIES_LIST) {
+                            launchSingleTop = true
+                        }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                )
+
+                NavigationDrawerItem(
+                    icon = { Icon(Icons.Default.Bookmarks, contentDescription = null) },
+                    label = { Text("Shelves") },
+                    selected = currentRoute == ROUTE_SHELVES,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navController.navigate(ROUTE_SHELVES) {
                             launchSingleTop = true
                         }
                     },
@@ -146,6 +180,30 @@ fun AppNavigation(
 
             composable(ROUTE_SETTINGS) {
                 SettingsScreen(openDrawer = openDrawer)
+            }
+
+            composable(ROUTE_SERIES_LIST) {
+                SeriesListScreen(
+                    onSeriesClick = { name -> navController.navigate("series/${Uri.encode(name)}") },
+                    openDrawer = openDrawer,
+                )
+            }
+
+            composable(ROUTE_SHELVES) {
+                ShelvesScreen(
+                    onShelfClick = { shelfId -> navController.navigate("shelf/$shelfId") },
+                    openDrawer = openDrawer,
+                )
+            }
+
+            composable(
+                route = ROUTE_SHELF_DETAIL,
+                arguments = listOf(navArgument("shelfId") { type = NavType.LongType }),
+            ) {
+                ShelfDetailScreen(
+                    onBookClick = { book -> navController.navigate("reader/${book.id}") },
+                    onBack = { navController.popBackStack() },
+                )
             }
 
             composable(ROUTE_FOLDER_PICKER) {

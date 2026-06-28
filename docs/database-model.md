@@ -67,6 +67,15 @@ Stored in user preferences (DataStore), not in Room.
 
 ---
 
+### `comic_books` (additional columns added in v4)
+
+| Column      | Type    | Constraints | Notes                              |
+|-------------|---------|-------------|------------------------------------|
+| seriesName  | TEXT    | NULLABLE    | Auto-detected from filename        |
+| issueNumber | INTEGER | NULLABLE    | Auto-detected from filename        |
+
+---
+
 ### `watched_folders`
 
 Stores folders the user has explicitly chosen to scan. Device-local only — not synced.
@@ -79,21 +88,46 @@ Stores folders the user has explicitly chosen to scan. Device-local only — not
 
 ---
 
+### `shelves`
+
+User-created collections. Device-local only — not synced.
+
+| Column    | Type    | Constraints               | Notes                   |
+|-----------|---------|---------------------------|-------------------------|
+| id        | INTEGER | PRIMARY KEY AUTOINCREMENT |                         |
+| name      | TEXT    | NOT NULL                  |                         |
+| createdAt | INTEGER | NOT NULL                  | Unix epoch milliseconds |
+
+---
+
+### `shelf_entries`
+
+Many-to-many join between shelves and books. Device-local only — not synced.
+
+| Column  | Type    | Constraints                                   | Notes   |
+|---------|---------|-----------------------------------------------|---------|
+| shelfId | INTEGER | PK (composite), FK → shelves(id) CASCADE DEL  | Indexed |
+| bookId  | INTEGER | PK (composite), FK → comic_books(id) CASCADE DEL | Indexed |
+
+---
+
 ## Room Database
 
 - **Class:** `ComixaDatabase`
-- **Version:** 3
+- **Version:** 5
 - **Schema export:** enabled (`schemas/` directory)
-- **Entities:** `ComicBookEntity`, `ReadingProgressEntity`, `BookmarkEntity`, `WatchedFolderEntity`
+- **Entities:** `ComicBookEntity`, `ReadingProgressEntity`, `BookmarkEntity`, `WatchedFolderEntity`, `ShelfEntity`, `ShelfEntryEntity`
 
 ---
 
 ## Migration history
 
-| From → To | Change                                          |
-|-----------|-------------------------------------------------|
-| 1 → 2     | Added unique index on `comic_books.filePath`    |
-| 2 → 3     | Added `watched_folders` table                   |
+| From → To | Change                                                        |
+|-----------|---------------------------------------------------------------|
+| 1 → 2     | Added unique index on `comic_books.filePath`                  |
+| 2 → 3     | Added `watched_folders` table                                 |
+| 3 → 4     | Added `seriesName`, `issueNumber` columns to `comic_books`    |
+| 4 → 5     | Added `shelves` and `shelf_entries` tables                    |
 
 ---
 

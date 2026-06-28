@@ -338,7 +338,7 @@ private fun EmptyLibrary() {
 }
 
 @Composable
-private fun BookCard(item: BookWithProgress, onClick: () -> Unit) {
+internal fun BookCard(item: BookWithProgress, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
     ) {
@@ -378,7 +378,7 @@ private fun BookCard(item: BookWithProgress, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SeriesCard(series: LibraryItem.Series, onClick: () -> Unit) {
+internal fun SeriesCard(series: LibraryItem.Series, onClick: () -> Unit) {
     val cover = series.cover
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
