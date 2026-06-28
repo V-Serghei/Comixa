@@ -14,6 +14,12 @@ interface ProgressDao {
     @Upsert
     suspend fun upsert(entity: ReadingProgressEntity)
 
+    @Query("UPDATE reading_progress SET status = :status WHERE bookId = :bookId")
+    suspend fun updateStatus(bookId: Long, status: String)
+
+    @Query("DELETE FROM reading_progress WHERE bookId = :bookId")
+    suspend fun delete(bookId: Long)
+
     @Query("SELECT * FROM reading_progress")
     fun getAll(): Flow<List<ReadingProgressEntity>>
 
